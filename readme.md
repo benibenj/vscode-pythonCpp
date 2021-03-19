@@ -2,6 +2,7 @@
 
 This debugger starts a python debugger and attaches a C++ debugger to it for debugging python code that calls functions from shared object files (.so/.dll).
 
+
 ## PythonCpp Debug Requirements
 
 To use this debug-extension you must have the following extensions installed:
