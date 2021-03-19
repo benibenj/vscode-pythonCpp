@@ -19,6 +19,18 @@
     "Debuggers"
   ],
   "private": true,
+  "extensionDependencies":[
+    "ms-python.python",
+    "ms-vscode.cpptools"
+  ],
+  "homepage": "https://https://github.com/benibenj/vscode-pythonCpp/",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/benibenj/vscode-pythonCpp/"
+    },
+    "bugs": {
+        "url": "https://https://github.com/benibenj/vscode-pythonCpp//issues"
+    },
   "scripts": {
     "vscode:prepublish": "yarn run package-ext && yarn run package-web",
     "compile": "tsc -p ./",
@@ -85,13 +97,7 @@
 					"command": "extension.pythonCpp-debug.runEditorContents",
 					"when": "resourceLangId == python"
 				}
-			],
-      "debug/variables/context": [
-        {
-          "command": "extension.pythonCpp-debug.toggleFormatting",
-          "when": "debugType == 'pythoncpp' && debugProtocolVariableMenuContext == 'simple'"
-        }
-      ]
+			]
     },
     "commands": [
       {
