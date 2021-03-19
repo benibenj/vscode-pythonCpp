@@ -15,7 +15,7 @@ To use this extension you must have the following 3 configurations in your launc
 * C/C++ attach config e.g. Windows: (Windows) Attach, Linux: (gdb) Attach
 * Python launch config
 * PythonCpp Debug config with the following attributes:
-  - **pythonLaunchName**: The name of your C/C++ Attach configuration
+  - **pythonLaunchName**: The name of your C++ Attach configuration
   - **cppAttachName**: The name of your Python Launch configuration
 
 ```json
