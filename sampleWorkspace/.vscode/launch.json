@@ -31,7 +31,7 @@
       "type": "pythoncpp",
       "request": "launch",
       "pythonLaunchName": "Python: Current File",
-      "gdbAttachName": "(Windows) Attach",
+      "cppAttachName": "(Windows) Attach",
     },
     {
       "name": "Python: Current File",

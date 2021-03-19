@@ -14,6 +14,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	// run the debug adapter inside the extension and directly talk to it
 
+	// Check if the user has the extension installed and if so, activate them
 	extPy = vscode.extensions.getExtension("ms-python.python");
 	extCpp = vscode.extensions.getExtension("ms-vscode.cpptools");
 	if(!extPy){

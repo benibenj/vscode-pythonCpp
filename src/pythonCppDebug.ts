@@ -9,12 +9,6 @@ import * as vscode from 'vscode';
 import { DebugProtocol } from 'vscode-debugprotocol';
 
 
-/**
- * This interface describes the mock-debug specific launch attributes
- * (which are not part of the Debug Adapter Protocol).
- * The schema for these attributes lives in the package.json of the mock-debug extension.
- * The interface should always match this schema.
- */
 interface ILaunchRequestArguments extends DebugProtocol.LaunchRequestArguments {
 	/** An absolute path to the "program" to debug. */
 	program: string;
@@ -25,8 +19,8 @@ interface ILaunchRequestArguments extends DebugProtocol.LaunchRequestArguments {
 
 	pythonLaunchName: string;
 	pythonLaunch: string;
-	gdbAttachName: string;
-	gdbAttach: string;
+	cppAttachName: string;
+	cppAttach: string;
 }
 
 export class PythonCppDebugSession extends LoggingDebugSession {
@@ -47,9 +41,9 @@ export class PythonCppDebugSession extends LoggingDebugSession {
 
 		// We double all backslashes inside a string so that JSON.parse() doesn't crash due to handling '\' as escape charecter
 		let pyConf = JSON.parse(this.doubleBackslash(args.pythonLaunch));
-		let gdbConf = JSON.parse(this.doubleBackslash(args.gdbAttach));
+		let cppConf = JSON.parse(this.doubleBackslash(args.cppAttach));
 		
-		// We force the Debugger to stopOnEntry so we can attach the gdb debugger
+		// We force the Debugger to stopOnEntry so we can attach the cpp debugger
 		let oldStopOnEntry : boolean = pyConf.stopOnEntry ? true : false;
 		pyConf.stopOnEntry = true;
 
@@ -60,15 +54,15 @@ export class PythonCppDebugSession extends LoggingDebugSession {
 
 			vscode.debug.activeDebugSession.customRequest('pydevdSystemInfo').then(res => {
 
-				// start gdb attach
+				// start cpp attach
 				if(!folders){
 					let message = "Working folder not found, open a folder an try again" ;
 					vscode.window.showErrorMessage(message);
 					return;
 				}
 				// set processid to debugpy processid to attach to
-				gdbConf.processId = res.process.pid;
-				vscode.debug.startDebugging(folders[0], gdbConf, undefined).then(_ => {
+				cppConf.processId = res.process.pid;
+				vscode.debug.startDebugging(folders[0], cppConf, undefined).then(_ => {
 					
 					// We have to delay the call to contune the process as it might not have fully attached yet
 					setTimeout(_ => {

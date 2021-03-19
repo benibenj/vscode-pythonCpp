@@ -11,7 +11,7 @@ import { PythonCppDebugSession } from './pythonCppDebug';
 export function activatePythonCppDebug(context: vscode.ExtensionContext, factory?: vscode.DebugAdapterDescriptorFactory) {
 
 	context.subscriptions.push(
-		vscode.commands.registerCommand('extension.mock-debug.runEditorContents', (resource: vscode.Uri) => {
+		vscode.commands.registerCommand('extension.pythonCpp-debug.runEditorContents', (resource: vscode.Uri) => {
 			let targetResource = resource;
 			if (!targetResource && vscode.window.activeTextEditor) {
 				targetResource = vscode.window.activeTextEditor.document.uri;
@@ -22,13 +22,13 @@ export function activatePythonCppDebug(context: vscode.ExtensionContext, factory
 						name: 'PythonCpp Debug',
 						request: 'launch',
 						pythonLaunchName: "Python: Current File",
-              			gdbAttachName: "gdb (attach)"
+              			cppAttachName: "(Windows) Attach"
 					},
 					{ noDebug: true }
 				);
 			}
 		}),
-		vscode.commands.registerCommand('extension.mock-debug.debugEditorContents', (resource: vscode.Uri) => {
+		vscode.commands.registerCommand('extension.pythonCpp-debug.debugEditorContents', (resource: vscode.Uri) => {
 			let targetResource = resource;
 			if (!targetResource && vscode.window.activeTextEditor) {
 				targetResource = vscode.window.activeTextEditor.document.uri;
@@ -39,14 +39,8 @@ export function activatePythonCppDebug(context: vscode.ExtensionContext, factory
 					name: 'PythonCpp Debug',
 					request: 'launch',
 					pythonLaunchName: "Python: Current File",
-              		gdbAttachName: "gdb (attach)"
+              		cppAttachName: "(Windows) Attach"
 				});
-			}
-		}),
-		vscode.commands.registerCommand('extension.mock-debug.toggleFormatting', (variable) => {
-			const ds = vscode.debug.activeDebugSession;
-			if (ds) {
-				ds.customRequest('toggleFormatting');
 			}
 		})
 	);
@@ -79,9 +73,9 @@ class PythonCppConfigurationProvider implements vscode.DebugConfigurationProvide
 				return undefined;	// abort launch
 			});
 		}
-		// Make sure the user has defined the properties 'pythonLaunchName' & 'gdbAttachName
-		if(!config.pythonLaunchName || !config.gdbAttachName){
-			let msg = "Please make sure to define 'pythonLaunchName' & 'gdbAttachName' for pythonCpp in your launch.json file";
+		// Make sure the user has defined the properties 'pythonLaunchName' & 'cppAttachName
+		if(!config.pythonLaunchName || !config.cppAttachName){
+			let msg = "Please make sure to define 'pythonLaunchName' & 'cppAttachName' for pythonCpp in your launch.json file";
 			return vscode.window.showInformationMessage(msg).then(_ => {
 				return undefined;	// abort launch
 			});
@@ -105,21 +99,21 @@ class PythonCppConfigurationProvider implements vscode.DebugConfigurationProvide
 		}
 
 		let pythonLaunchName = nameDefinedInLaunch(config.pythonLaunchName, values);
-		let gdbAttachName = nameDefinedInLaunch(config.gdbAttachName, values);
+		let cppAttachName = nameDefinedInLaunch(config.cppAttachName, values);
 		
-		if(!pythonLaunchName || !gdbAttachName){
-			let message = "Please make sure you have a configurations with the names '" + config.pythonLaunchName + "' & '" + config.gdbAttachName + "' in your launch.json file.";
+		if(!pythonLaunchName || !cppAttachName){
+			let message = "Please make sure you have a configurations with the names '" + config.pythonLaunchName + "' & '" + config.cppAttachName + "' in your launch.json file.";
 			vscode.window.showErrorMessage(message);
 			return undefined;
 		}
 
 		/* 
-			We have to stringify both python and gdb configs as they might use commands (for example command:pickprocess) 
+			We have to stringify both python and cpp configs as they might use commands (for example command:pickprocess) 
 			that this extension hasn't defined and would cause an error. We need to make sure to JSON.parse(...) them 
 			before handing them to the debuggers.
 		*/
 		config.pythonLaunch = JSON.stringify(pythonLaunchName);
-		config.gdbAttach = JSON.stringify(gdbAttachName);
+		config.cppAttach = JSON.stringify(cppAttachName);
 
 		return config;
 	}
