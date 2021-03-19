@@ -2,6 +2,7 @@
 
 This debugger starts a python debugger and attaches a C++ debugger to it for debugging python code that calls functions from shared object files (.so/.dll).
 
+![vscode-pythonCpp example](images/pythonCppExample.gif)
 
 ## PythonCpp Debug Requirements
 
