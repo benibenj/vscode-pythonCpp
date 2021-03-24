@@ -10,7 +10,9 @@
   },
   "license": "MIT",
   "keywords": [
-    "multi-root ready"
+    "multi-root ready",
+    "python",
+    "cpp"
   ],
   "engines": {
     "vscode": "^1.49.0"
