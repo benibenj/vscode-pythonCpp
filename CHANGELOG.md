@@ -1,5 +1,10 @@
 ## 0.2.1
 * Added changelog
+* Added topics to Readme.md
+* Added Initial Configuration Provider for when there is no launch.json file
+* Changed Keybinding for restart, however restart isnt supported at the moment. It will stop stop the session of the debugger.
+* If the C++ debugger fails to start it will terminate the python debugger that it started.
+* Other minor patches
 
 ## 0.2.0
 * Updated Icon.png to higer resolution
