@@ -57,6 +57,8 @@ export function activatePythonCppDebug(context: vscode.ExtensionContext, factory
 	const provider = new PythonCppConfigurationProvider();
 	context.subscriptions.push(vscode.debug.registerDebugConfigurationProvider('pythoncpp', provider));
 
+		
+
 	if (!factory) {
 		factory = new InlineDebugAdapterFactory();
 	}
@@ -113,10 +115,108 @@ class PythonCppConfigurationProvider implements vscode.DebugConfigurationProvide
 		*/
 		config.pythonLaunch = JSON.stringify(pythonLaunchName);
 		config.cppAttach = JSON.stringify(cppAttachName);
-
+		console.log(config);
 		return config;
 	}
+
+	async provideDebugConfigurations(folder?: vscode.WorkspaceFolder, token?: vscode.CancellationToken): Promise<vscode.DebugConfiguration[]> {
+		
+        interface MenuItem extends vscode.QuickPickItem {
+            configuration: vscode.DebugConfiguration;
+        }
+
+		const gdbConfig : vscode.DebugConfiguration = {
+            "name": "(gdb) Attach",
+            "type": "cppdbg",
+            "request": "attach",
+            "program": await this.getPythonPath(null),
+            "processId": "",
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            "MIMode": "gdb",
+            "miDebuggerPath": "/path/to/gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        };
+
+		const winConfig : vscode.DebugConfiguration = {
+            "name": "(Windows) Attach",
+            "type": "cppvsdbg",
+            "request": "attach",
+            "processId": ""
+        };
+		
+        const items: MenuItem[] = [
+			{ label: "PythonCpp Debug", configuration: winConfig, description: "Windows" },
+			{ label: "PythonCpp Debug", configuration: gdbConfig, description: "GDB" }
+		];
+		
+        const selection: MenuItem | undefined = await vscode.window.showQuickPick(items, {placeHolder: "Select a configuration"});
+        if (!selection) {
+            return []; // User canceled it.
+        }
+
+		const pythonConfig : vscode.DebugConfiguration = {
+			"name": "Python: Current File",
+			"type": "python",
+			"request": "launch",
+			"program": "${file}",
+			"console": "integratedTerminal"
+		};
+		
+        return [selection.configuration, pythonConfig];
+    }
+
+	public async getPythonPath(
+        document: vscode.TextDocument | null
+    ): Promise<string> {
+        try {
+            let pyExt = vscode.extensions.getExtension('ms-python.python');
+            if (!pyExt){
+				return 'python';
+			}
+
+            if (pyExt.packageJSON?.featureFlags?.usingNewInterpreterStorage) {
+                if (!pyExt.isActive){
+					await pyExt.activate();
+				}
+                    
+                const pythonPath = pyExt.exports.settings.getExecutionDetails ?
+                    pyExt.exports.settings.getExecutionDetails(
+                        document?.uri
+                    ).execCommand :
+                    pyExt.exports.settings.getExecutionCommand(document?.uri);
+                return pythonPath ? pythonPath.join(' ') : 'python';
+            } else {
+                let path;
+                if (document){
+					path = vscode.workspace.getConfiguration(
+                        'python',
+                        document.uri
+                    ).get<string>('pythonPath');
+				}
+                else{
+					path = vscode.workspace.getConfiguration(
+                        'python'
+                    ).get<string>('pythonPath');
+				}
+                if(!path){
+					return 'python';
+				} 
+            }
+        } catch (ignored) {
+            return 'python';
+        }
+        return 'python';
+    }
+
 }
+
+
 
 function getConfig(name:string, folder:WorkspaceFolder): JSON | undefined{
 	const launchConfigs = vscode.workspace.getConfiguration('launch', folder.uri);
