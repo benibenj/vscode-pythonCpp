@@ -34,11 +34,12 @@ export class PythonCppDebugSession extends LoggingDebugSession {
 		let folders = vscode.workspace.workspaceFolders;
 
 		if(!folders){
-			let message = "Working folder not found, open a folder an try again" ;
+			let message = "Working folder not found, open a folder and try again" ;
 			vscode.window.showErrorMessage(message);
 			return;
 		}
 
+		
 		// We double all backslashes inside a string so that JSON.parse() doesn't crash due to handling '\' as escape charecter
 		let pyConf = JSON.parse(this.doubleBackslash(args.pythonLaunch));
 		let cppConf = JSON.parse(this.doubleBackslash(args.cppAttach));
@@ -47,24 +48,40 @@ export class PythonCppDebugSession extends LoggingDebugSession {
 		let oldStopOnEntry : boolean = pyConf.stopOnEntry ? true : false;
 		pyConf.stopOnEntry = true;
 
-		vscode.debug.startDebugging(folders[0], pyConf, undefined).then( _ => {
-			if(! vscode.debug.activeDebugSession){
+		vscode.debug.startDebugging(folders[0], pyConf, undefined).then( pythonStartResponse => {
+
+			if(!vscode.debug.activeDebugSession || !pythonStartResponse){
 				return;
 			}
 
 			vscode.debug.activeDebugSession.customRequest('pydevdSystemInfo').then(res => {
 
-				// start cpp attach
 				if(!folders){
-					let message = "Working folder not found, open a folder an try again" ;
+					let message = "Working folder not found, open a folder and try again" ;
 					vscode.window.showErrorMessage(message);
 					return;
 				}
+
+				if(!res.process.pid){
+					let message = "The python debugger couldn't send its processId,						\
+					 				make sure to enter an Issue on the official PythonCpp Debug Github about this issue!" ;
+					vscode.window.showErrorMessage(message);
+					return;
+				}
+
 				// set processid to debugpy processid to attach to
 				cppConf.processId = res.process.pid;
-				vscode.debug.startDebugging(folders[0], cppConf, undefined).then(_ => {
+
+				vscode.debug.startDebugging(folders[0], cppConf, undefined).then(cppStartResponse => {
+
+					// If the Cpp debugger wont start make sure to stop the python debugsession
+					let pythonSession = vscode.debug.activeDebugSession;
+					if(!cppStartResponse && pythonSession && pythonSession.type === 'python'){
+						vscode.debug.stopDebugging(pythonSession);
+						return;
+					}
 					
-					// We have to delay the call to contune the process as it might not have fully attached yet
+					// We have to delay the call to continue the process as it might not have fully attached yet
 					setTimeout(_ => {
 						/** 
 						 * If the user hasn't defined/set stopOnEntry in the Python config 
@@ -78,32 +95,8 @@ export class PythonCppDebugSession extends LoggingDebugSession {
 				});
 			});
 		});
-
-		/* vscode.debug.onDidReceiveDebugSessionCustomEvent(res=>{
-			console.log("Custom Event: ");
-			console.log(res);
-		});
-
 		
-		vscode.debug.onDidChangeActiveDebugSession(res=>{
-			console.log("changed: ");
-			console.log(res);
-		});
-
-		vscode.debug.onDidStartDebugSession(res=>{
-			console.log("start: ");
-			console.log(res);
-		});
-
-		vscode.debug.onDidTerminateDebugSession(res=>{
-			console.log("end: ");
-			console.log(res);
-		}); */
-
-		// wait until configuration has finished (and configurationDoneRequest has been called)
-		//await this._configurationDone.wait(1000);
 		this.sendEvent(new TerminatedEvent());
-
 		this.sendResponse(response);
 	}
 
