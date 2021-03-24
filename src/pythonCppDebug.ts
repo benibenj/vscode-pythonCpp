@@ -79,16 +79,16 @@ export class PythonCppDebugSession extends LoggingDebugSession {
 			});
 		});
 
-		vscode.debug.onDidReceiveDebugSessionCustomEvent(res=>{
+		/* vscode.debug.onDidReceiveDebugSessionCustomEvent(res=>{
 			console.log("Custom Event: ");
 			console.log(res);
 		});
 
-		/*
+		
 		vscode.debug.onDidChangeActiveDebugSession(res=>{
 			console.log("changed: ");
 			console.log(res);
-		});*/
+		});
 
 		vscode.debug.onDidStartDebugSession(res=>{
 			console.log("start: ");
@@ -98,7 +98,7 @@ export class PythonCppDebugSession extends LoggingDebugSession {
 		vscode.debug.onDidTerminateDebugSession(res=>{
 			console.log("end: ");
 			console.log(res);
-		});
+		}); */
 
 		// wait until configuration has finished (and configurationDoneRequest has been called)
 		//await this._configurationDone.wait(1000);

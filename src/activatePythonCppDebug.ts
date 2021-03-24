@@ -42,6 +42,14 @@ export function activatePythonCppDebug(context: vscode.ExtensionContext, factory
               		cppAttachName: "(Windows) Attach"
 				});
 			}
+		}),
+		vscode.commands.registerCommand('extension.pythonCpp-debug.restart', _ => {
+			console.log("Restarting PythonCpp Debug");
+			let session = vscode.debug.activeDebugSession;
+			console.log(session);
+			if(session && session.type === 'python'){
+				vscode.debug.stopDebugging(session);
+			}
 		})
 	);
 
@@ -82,24 +90,15 @@ class PythonCppConfigurationProvider implements vscode.DebugConfigurationProvide
 		}
 
 		// Get the launch.json configurations
-		let folders = vscode.workspace.workspaceFolders;
 
-		if(!folders){
-			let message = "Working folder not found, open a folder an try again" ;
+		if(!folder){
+			let message = "Working folder not found, open a folder and try again" ;
 			vscode.window.showErrorMessage(message);
 			return undefined;
 		}
 
-		const launchConfigs = vscode.workspace.getConfiguration('launch', folders[0].uri);
-		const values: JSON | undefined = launchConfigs.get('configurations');
-		if(!values){
-			let message = "Unexpected error with the launch.json file" ;
-			vscode.window.showErrorMessage(message);
-			return undefined;
-		}
-
-		let pythonLaunchName = nameDefinedInLaunch(config.pythonLaunchName, values);
-		let cppAttachName = nameDefinedInLaunch(config.cppAttachName, values);
+		let pythonLaunchName = getConfig(config.pythonLaunchName, folder);
+		let cppAttachName = getConfig(config.cppAttachName, folder);
 		
 		if(!pythonLaunchName || !cppAttachName){
 			let message = "Please make sure you have a configurations with the names '" + config.pythonLaunchName + "' & '" + config.cppAttachName + "' in your launch.json file.";
@@ -117,6 +116,18 @@ class PythonCppConfigurationProvider implements vscode.DebugConfigurationProvide
 
 		return config;
 	}
+}
+
+function getConfig(name:string, folder:WorkspaceFolder): JSON | undefined{
+	const launchConfigs = vscode.workspace.getConfiguration('launch', folder.uri);
+	const values: JSON | undefined = launchConfigs.get('configurations');
+	if(!values){
+		let message = "Unexpected error with the launch.json file" ;
+		vscode.window.showErrorMessage(message);
+		return undefined;
+	}
+
+	return nameDefinedInLaunch(name, values);
 }
 
 function nameDefinedInLaunch(name:string, launch:JSON): JSON | undefined {

@@ -1,7 +1,7 @@
 {
   "name": "pythoncpp-debug",
   "displayName": "PythonCpp Debug",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "benjamin-simmonds",
   "description": "Extension for starting the Python & Cpp debugger on the same process in VScode",
   "author": {
@@ -19,6 +19,7 @@
     "Debuggers"
   ],
   "private": true,
+  "icon": "images/icon.png",
   "extensionDependencies":[
     "ms-python.python",
     "ms-vscode.cpptools"
@@ -46,7 +47,6 @@
     "watch-web": "webpack --watch --devtool nosources-source-map --info-verbosity verbose --config ./build/web-extension.webpack.config.js",
     "package-web": "webpack --mode production --config ./build/web-extension.webpack.config.js"
   },
-  "enableProposedApi": true,
   "dependencies": {
     "await-notify": "1.0.1",
     "vscode-debugadapter": "^1.45.0"
