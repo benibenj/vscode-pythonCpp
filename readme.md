@@ -13,11 +13,13 @@ To use this debug-extension you must have the following extensions installed:
 ## Launch.json
 
 To use this extension you must have the following 3 configurations in your launch.json file
-* C/C++ attach config e.g. Windows: (Windows) Attach, Linux: (gdb) Attach
+* C/C++ attach config e.g. Windows: `(Windows) Attach`, Linux: `(gdb) Attach`
 * Python launch config
 * PythonCpp Debug config with the following attributes:
   - **pythonLaunchName**: The name of your C++ Attach configuration
   - **cppAttachName**: The name of your Python Launch configuration
+
+ The following is an example launch.json file for windows users. If your working on Linux make sure to have a `(gdb) Attach` configuration instead of `(Windows) Attach`.
 
 ```json
 {
@@ -48,7 +50,11 @@ To use this extension you must have the following 3 configurations in your launc
 
 ```
 
-## Additional infromation
+## What the debugger does
 
-Between consecutive breakpoints where one is located in python and the other in the C++ code, only the 'continue' button will work correctly.
-Additionally, the reset button isn't supported due to the Python debugger changing its processId after a restart. 
+When you start PythonCpp Debug it launches a Python debugger and attaches a C++ debugger to it by using the processId of the python debugger. As soon as both debuggers are attached the PythonCpp debugger terminates.
+
+## Additional infromation
+* Make sure the shared object files (.so/.dll) you are loading your functions from are compiled with `debug info`.
+* Between consecutive `breakpoints` where one is located in python and the other in the C++ code, only the 'continue' button will work correctly.
+* Additionally, the `restart button` isn't supported due to the Python debugger changing its processId after a restart. 
