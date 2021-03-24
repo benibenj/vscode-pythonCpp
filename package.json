@@ -123,7 +123,7 @@
     "keybindings": [
       {
         "command": "extension.pythonCpp-debug.restart",
-        "key": "shift+r"
+        "key": "shift+Ctrl+r"
       }
     ],
     "breakpoints": [
@@ -138,6 +138,11 @@
       {
         "type": "pythoncpp",
         "label": "PythonCpp Debug",
+        "languages": [
+          "python",
+          "cpp",
+          "c"
+        ],
         "program": "./out/debugAdapter.js",
         "runtime": "node",
         "configurationAttributes": {
