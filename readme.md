@@ -54,7 +54,7 @@ To use this extension you must have the following 3 configurations in your launc
 
 When you start PythonCpp Debug it launches a Python debugger and attaches a C++ debugger to it by using the processId of the python debugger. As soon as both debuggers are attached the PythonCpp debugger terminates.
 
-## Additional infromation
-* Make sure the shared object files (.so/.dll) you are loading your functions from are compiled with `debug info`.
+## Additional information
+* Make sure the shared object files (.so/.dll) you are loading your functions from have been compiled with `debug info`.
 * Between consecutive `breakpoints` where one is located in python and the other in the C++ code, only the 'continue' button will work correctly.
 * Additionally, the `restart button` isn't supported due to the Python debugger changing its processId after a restart. 
