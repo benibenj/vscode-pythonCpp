@@ -2,7 +2,7 @@
   "name": "pythoncpp-debug",
   "displayName": "PythonCpp Debug",
   "version": "0.1.0",
-  "publisher": "benjamin simmonds",
+  "publisher": "BeniBenj",
   "description": "Extension for starting the Python & Cpp debugger on the same process in VScode",
   "author": {
     "name": "Benjamin Simmonds",
@@ -113,6 +113,17 @@
         "category": "PythonCpp Debug",
 				"enablement": "!inDebugMode",
         "icon": "$(play)"
+      },
+      {
+        "command": "extension.pythonCpp-debug.restart",
+        "title": "PythonCpp Debug Restart",
+        "category": "PythonCpp Debug"
+      }
+    ],
+    "keybindings":[
+      {
+        "command": "extension.pythonCpp-debug.restart",
+        "key": "shift+r"
       }
     ],
     "breakpoints": [
@@ -120,7 +131,7 @@
         "language": "python"
       },
       {
-        "language": "python"
+        "language": "cpp"
       }
     ],
     "debuggers": [
@@ -151,7 +162,9 @@
         },
         "initialConfigurations": [
           {
+            "name": "PythonCpp Debug",
             "type": "pythoncpp",
+            "request": "launch",
             "pythonLaunchName": "Python: Current File",
             "cppAttachName": "(Windows) Attach"
           }
@@ -159,6 +172,7 @@
         "configurationSnippets": [
           {
             "label": "PythonCpp Debug: Launch",
+            "description":"A new configuration for a PythonCpp debugger",
             "body": {
               "name": "PythonCpp Debug",
               "type": "pythoncpp",
