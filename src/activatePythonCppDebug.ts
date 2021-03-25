@@ -150,8 +150,8 @@ class PythonCppConfigurationProvider implements vscode.DebugConfigurationProvide
         };
 		
         const items: MenuItem[] = [
-			{ label: "PythonCpp Debug", configuration: winConfig, description: "Windows" },
-			{ label: "PythonCpp Debug", configuration: gdbConfig, description: "GDB" }
+			{ label: "Python C++ Debug", configuration: winConfig, description: "Windows" },
+			{ label: "Python C++ Debug", configuration: gdbConfig, description: "GDB" }
 		];
 		
         const selection: MenuItem | undefined = await vscode.window.showQuickPick(items, {placeHolder: "Select a configuration"});
