@@ -1,10 +1,10 @@
-# VS Code PythonCpp Debug
+# VS Code Python C++ Debug
 
 This debugger starts a python debugger and attaches a C++ debugger to it for debugging python code that calls functions from shared object files (.so/.dll).
 
 ![vscode-pythonCpp example](images/pythonCppExample.gif)
 
-## PythonCpp Debug Requirements
+## Python C++ Debug Requirements
 
 To use this debug-extension you must have the following extensions installed:
 * Python by Microsoft (ms-python.python)
@@ -15,7 +15,7 @@ To use this debug-extension you must have the following extensions installed:
 To use this extension you must have the following 3 configurations in your launch.json file
 * C/C++ attach config e.g. Windows: `(Windows) Attach`, Linux: `(gdb) Attach`
 * Python launch config
-* PythonCpp Debug config with the following attributes:
+* Python C++ Debug config with the following attributes:
   - **pythonLaunchName**: The name of your C++ Attach configuration
   - **cppAttachName**: The name of your Python Launch configuration
 
@@ -32,7 +32,7 @@ To use this extension you must have the following 3 configurations in your launc
       "processId": ""
     },
     {
-      "name": "PythonCpp Debug",
+      "name": "Python C++ Debug",
       "type": "pythoncpp",
       "request": "launch",
       "pythonLaunchName": "Python: Current File",
@@ -52,7 +52,7 @@ To use this extension you must have the following 3 configurations in your launc
 
 ## What the debugger does
 
-When you start PythonCpp Debug it launches a Python debugger and attaches a C++ debugger to it by using the processId of the python debugger. As soon as both debuggers are attached the PythonCpp debugger terminates.
+When you start Python C++ Debug it launches a Python debugger and attaches a C++ debugger to it by using the processId of the python debugger. As soon as both debuggers are attached the Python C++ debugger terminates.
 
 ## Additional information
 * Make sure the shared object files (.so/.dll) you are loading your functions from have been compiled with `debug info`.
