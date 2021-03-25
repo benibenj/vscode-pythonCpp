@@ -16,7 +16,19 @@
     "C",
     "C++",
     "python and c++",
-    "native"
+    "python & c++",
+    "python c++",
+    "native",
+    "python debug",
+    "python native debug",
+    "python C++ Debug",
+    "debugger",
+    "python attach",
+    "C++ attach",
+    "Cpp attach",
+    "Python attach C++",
+    "debug python c++",
+    "ctypes"
   ],
   "engines": {
     "vscode": "^1.49.0"
