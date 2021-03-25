@@ -107,6 +107,8 @@ class PythonCppConfigurationProvider implements vscode.DebugConfigurationProvide
 			return undefined;
 		}
 
+		cppAttachName["processId"] = "";
+
 		/* 
 			We have to stringify both python and cpp configs as they might use commands (for example command:pickprocess) 
 			that this extension hasn't defined and would cause an error. We need to make sure to JSON.parse(...) them 
@@ -114,7 +116,6 @@ class PythonCppConfigurationProvider implements vscode.DebugConfigurationProvide
 		*/
 		config.pythonLaunch = JSON.stringify(pythonLaunchName);
 		config.cppAttach = JSON.stringify(cppAttachName);
-		console.log(config);
 		return config;
 	}
 
