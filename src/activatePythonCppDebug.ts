@@ -92,7 +92,6 @@ class PythonCppConfigurationProvider implements vscode.DebugConfigurationProvide
 		}
 
 		// Get the launch.json configurations
-
 		if(!folder){
 			let message = "Working folder not found, open a folder and try again" ;
 			vscode.window.showErrorMessage(message);

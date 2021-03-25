@@ -1,6 +1,6 @@
 {
   "name": "pythoncpp-debug",
-  "displayName": "PythonCpp Debug",
+  "displayName": "Python C++ Debug",
   "version": "0.2.1",
   "publisher": "benjamin-simmonds",
   "description": "Extension for starting the Python & Cpp debugger on the same process in VScode",
@@ -12,13 +12,18 @@
   "keywords": [
     "multi-root ready",
     "python",
-    "cpp"
+    "cpp",
+    "C",
+    "C++",
+    "python and c++",
+    "native"
   ],
   "engines": {
     "vscode": "^1.49.0"
   },
   "categories": [
-    "Debuggers"
+    "Debuggers",
+    "Data Science"
   ],
   "private": true,
   "icon": "images/icon.png",
@@ -120,12 +125,6 @@
         "command": "extension.pythonCpp-debug.restart",
         "title": "PythonCpp Debug Restart",
         "category": "PythonCpp Debug"
-      }
-    ],
-    "keybindings": [
-      {
-        "command": "extension.pythonCpp-debug.restart",
-        "key": "shift+Ctrl+r"
       }
     ],
     "breakpoints": [

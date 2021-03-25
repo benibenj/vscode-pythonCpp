@@ -1,3 +1,8 @@
+## 0.2.2
+* Removing restart keybinding as it isn't supported at the moment
+* Changed Displayname from `PythonCpp Debug` to `Python C++ Debug` for better search results in the marketplace
+* Added Keywords for better search results in the marketplace
+
 ## 0.2.1
 * Added changelog
 * Added topics to Readme.md
