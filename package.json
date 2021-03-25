@@ -1,7 +1,7 @@
 {
   "name": "pythoncpp-debug",
   "displayName": "Python C++ Debug",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "publisher": "benjamin-simmonds",
   "description": "Extension for starting the Python & C++ debugger on the same process in VScode",
   "author": {
