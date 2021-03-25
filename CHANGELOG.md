@@ -1,3 +1,6 @@
+# 0.2.3
+* Fixing Github Repo links
+
 ## 0.2.2
 * Changing new name in package.json for configurations
 

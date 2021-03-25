@@ -43,13 +43,13 @@
     "ms-python.python",
     "ms-vscode.cpptools"
   ],
-  "homepage": "https://https://github.com/benibenj/vscode-pythonCpp/",
+  "homepage": "https://github.com/benibenj/vscode-pythonCpp/",
   "repository": {
     "type": "git",
     "url": "https://github.com/benibenj/vscode-pythonCpp/"
   },
   "bugs": {
-    "url": "https://https://github.com/benibenj/vscode-pythonCpp//issues"
+    "url": "https://github.com/benibenj/vscode-pythonCpp/issues"
   },
   "scripts": {
     "vscode:prepublish": "yarn run package-ext && yarn run package-web",
