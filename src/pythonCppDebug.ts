@@ -6,6 +6,7 @@ import {
 	LoggingDebugSession, TerminatedEvent
 } from 'vscode-debugadapter';
 import * as vscode from 'vscode';
+import * as os from 'os';
 import { DebugProtocol } from 'vscode-debugprotocol';
 
 
@@ -25,30 +26,48 @@ interface ILaunchRequestArguments extends DebugProtocol.LaunchRequestArguments {
 
 export class PythonCppDebugSession extends LoggingDebugSession {
 
+	private folder : vscode.WorkspaceFolder | undefined;
+
 	public constructor() {
 		super();
+
+		let folders = vscode.workspace.workspaceFolders;
+		if(!folders){
+			let message = "Working folder not found, open a folder and try again" ;
+			vscode.window.showErrorMessage(message);
+			this.sendEvent(new TerminatedEvent());
+			return;
+		}
+		this.folder = folders[0];
 	}
 
 	protected async launchRequest(response: DebugProtocol.LaunchResponse, args: ILaunchRequestArguments) {
-		
-		let folders = vscode.workspace.workspaceFolders;
-
-		if(!folders){
+	
+		if(!this.folder){
 			let message = "Working folder not found, open a folder and try again" ;
 			vscode.window.showErrorMessage(message);
 			return;
 		}
 
+		let pyConf;
+		let cppConf;
+
+		if(os.platform().startsWith("win")){
+			// We double all backslashes inside a string so that JSON.parse() doesn't crash due to handling '\' as escape charecter on Windows
+			pyConf = JSON.parse(this.doubleBackslash(args.pythonLaunch));
+			cppConf = JSON.parse(this.doubleBackslash(args.cppAttach));
+		}
+		else{
+			pyConf = JSON.parse(args.pythonLaunch);
+			cppConf = JSON.parse(args.cppAttach);
+		}
 		
-		// We double all backslashes inside a string so that JSON.parse() doesn't crash due to handling '\' as escape charecter
-		let pyConf = JSON.parse(this.doubleBackslash(args.pythonLaunch));
-		let cppConf = JSON.parse(this.doubleBackslash(args.cppAttach));
 		
 		// We force the Debugger to stopOnEntry so we can attach the cpp debugger
 		let oldStopOnEntry : boolean = pyConf.stopOnEntry ? true : false;
 		pyConf.stopOnEntry = true;
 
-		vscode.debug.startDebugging(folders[0], pyConf, undefined).then( pythonStartResponse => {
+		await vscode.debug.startDebugging(this.folder, pyConf, undefined).then( pythonStartResponse => {
 
 			if(!vscode.debug.activeDebugSession || !pythonStartResponse){
 				return;
@@ -56,15 +75,9 @@ export class PythonCppDebugSession extends LoggingDebugSession {
 
 			vscode.debug.activeDebugSession.customRequest('pydevdSystemInfo').then(res => {
 
-				if(!folders){
-					let message = "Working folder not found, open a folder and try again" ;
-					vscode.window.showErrorMessage(message);
-					return;
-				}
-
 				if(!res.process.pid){
 					let message = "The python debugger couldn't send its processId,						\
-					 				make sure to enter an Issue on the official PythonCpp Debug Github about this issue!" ;
+					 				make sure to enter an Issue on the official Python Cp++ Debug Github about this issue!" ;
 					vscode.window.showErrorMessage(message);
 					return;
 				}
@@ -72,7 +85,7 @@ export class PythonCppDebugSession extends LoggingDebugSession {
 				// set processid to debugpy processid to attach to
 				cppConf.processId = res.process.pid;
 
-				vscode.debug.startDebugging(folders[0], cppConf, undefined).then(cppStartResponse => {
+				vscode.debug.startDebugging(this.folder, cppConf, undefined).then(cppStartResponse => {
 
 					// If the Cpp debugger wont start make sure to stop the python debugsession
 					let pythonSession = vscode.debug.activeDebugSession;

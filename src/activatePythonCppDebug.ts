@@ -123,6 +123,7 @@ class PythonCppConfigurationProvider implements vscode.DebugConfigurationProvide
 		
         interface MenuItem extends vscode.QuickPickItem {
             configuration: vscode.DebugConfiguration;
+			type:string;
         }
 
 		const gdbConfig : vscode.DebugConfiguration = {
@@ -151,8 +152,8 @@ class PythonCppConfigurationProvider implements vscode.DebugConfigurationProvide
         };
 		
         const items: MenuItem[] = [
-			{ label: "Python C++ Debug", configuration: winConfig, description: "Windows" },
-			{ label: "Python C++ Debug", configuration: gdbConfig, description: "GDB" }
+			{ label: "Python C++ Debug", configuration: winConfig, description: "Windows", type: "(Windows)"},
+			{ label: "Python C++ Debug", configuration: gdbConfig, description: "GDB", type: "(gdb)"}
 		];
 		
         const selection: MenuItem | undefined = await vscode.window.showQuickPick(items, {placeHolder: "Select a configuration"});
@@ -167,8 +168,16 @@ class PythonCppConfigurationProvider implements vscode.DebugConfigurationProvide
 			"program": "${file}",
 			"console": "integratedTerminal"
 		};
+
+		const pythonCppConfig : vscode.DebugConfiguration = {
+			"name": "Python C++ Debug",
+            "type": "pythoncpp",
+            "request": "launch",
+            "pythonLaunchName": "Python: Current File",
+            "cppAttachName": selection.type + " Attach"
+		};
 		
-        return [selection.configuration, pythonConfig];
+        return [pythonCppConfig, selection.configuration, pythonConfig];
     }
 
 	public async getPythonPath(

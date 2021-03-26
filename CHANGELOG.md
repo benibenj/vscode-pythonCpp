@@ -1,7 +1,8 @@
-# 0.2.4 - 0.26
+# 0.2.4 - 0.2.7
 * Fixing Github Repo links
 * Small fixes
 * ProcessId of gdb/windows attach will be set to empty string due to problems with commands in the configuration for C++
+* Improved configuration provider
 
 ## 0.2.3
 * Changing new name in package.json for configurations

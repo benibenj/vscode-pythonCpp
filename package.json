@@ -10,11 +10,12 @@
   },
   "license": "MIT",
   "keywords": [
-    "multi-root ready",
     "python",
     "cpp",
     "C",
     "C++",
+    "C++ Python Debug",
+    "Debug Python C++",
     "python and c++",
     "python & c++",
     "python c++",
@@ -91,6 +92,7 @@
   "browser": "./dist/web/extension.js",
   "activationEvents": [
     "onLanguage:python",
+    "onLanguage:cpp",
     "onDebugResolve:pythoncpp",
     "onCommand:extension.pythonCpp-debug.runEditorContents",
     "onCommand:extension.pythonCpp-debug.debugEditorContents"
@@ -145,6 +147,9 @@
       },
       {
         "language": "cpp"
+      },
+      {
+        "language": "c"
       }
     ],
     "debuggers": [
@@ -165,6 +170,11 @@
               "cppAttachName"
             ],
             "properties": {
+              "request": {
+                "type": "string",
+                "description": "Only launch is supported",
+                "default": "launch"
+              },
               "pythonLaunchName": {
                 "type": "string",
                 "description": "The name of your python launch config",
@@ -178,18 +188,10 @@
             }
           }
         },
-        "initialConfigurations": [
-          {
-            "name": "Python C++ Debug",
-            "type": "pythoncpp",
-            "request": "launch",
-            "pythonLaunchName": "Python: Current File",
-            "cppAttachName": "(Windows) Attach"
-          }
-        ],
+        
         "configurationSnippets": [
           {
-            "label": "Python C++ Debug: Launch",
+            "label": "Python C++ Debug (Windows)",
             "description": "A new configuration for a Python C++ debugger",
             "body": {
               "name": "Python C++ Debug",
@@ -197,6 +199,17 @@
               "request": "launch",
               "pythonLaunchName": "Python: Current File",
               "cppAttachName": "(Windows) Attach"
+            }
+          },
+          {
+            "label": "Python C++ Debug (gdb)",
+            "description": "A new configuration for a Python C++ debugger",
+            "body": {
+              "name": "Python C++ Debug",
+              "type": "pythoncpp",
+              "request": "launch",
+              "pythonLaunchName": "Python: Current File",
+              "cppAttachName": "(gdb) Attach"
             }
           }
         ]

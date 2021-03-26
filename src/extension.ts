@@ -21,7 +21,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		return;
 	}
 	if(!extCpp){
-		vscode.window.showErrorMessage("You must have the official Cpp extension to use this debugger!");
+		vscode.window.showErrorMessage("You must have the official C++ extension to use this debugger!");
 		return;
 	}
 	if(!extPy.isActive){
