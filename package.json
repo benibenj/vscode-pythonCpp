@@ -15,10 +15,11 @@
     "C",
     "C++",
     "C++ Python Debug",
+    "C++ Python Debugger",
     "Debug Python C++",
     "python and c++",
     "python & c++",
-    "python c++",
+    "python c++ debugger",
     "native",
     "python debug",
     "python native debug",
@@ -165,10 +166,6 @@
         "runtime": "node",
         "configurationAttributes": {
           "launch": {
-            "required": [
-              "pythonLaunchName",
-              "cppAttachName"
-            ],
             "properties": {
               "request": {
                 "type": "string",
@@ -184,6 +181,28 @@
                 "type": "string",
                 "description": "The name of your cpp attach config",
                 "default": "(Windows) Attach"
+              },
+              "pythonConfig":{
+                "enum":[
+                  "manual",
+                  "default"
+                ],
+                "description": "Pick 'default' if you wish to use the default Python config, otherwise 'manual' and specify the 'pythonLaunchName' attribute",
+                "default": "manuel"
+              },
+              "cppConfig":{
+                "enum":[
+                  "manual",
+                  "default (win) Attach",
+                  "default (gdb) Attach"
+                ],
+                "enumDescription": [
+                  "Specify the 'cppAttachName' attribute to use the C++ Attach configuration from your launch.json file",
+                  "The C++ debugger will be launched with the default '(win) Attach' configuration",
+                  "The C++ debugger will be launched with the default '(gdb) Attach' configuration"
+                ],
+                "description": "Pick 'default (win)/(gdb)' if you wish to use the default configuration, otherwise 'manual' and specify the 'cppAttachName' attribute",
+                "default": "manual"
               }
             }
           }

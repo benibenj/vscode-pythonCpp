@@ -71,6 +71,15 @@ export function activatePythonCppDebug(context: vscode.ExtensionContext, factory
 
 class PythonCppConfigurationProvider implements vscode.DebugConfigurationProvider {
 
+	pythonPath = "python";
+
+	public constructor(){
+		this.getPythonPath(null).then(path => {
+			this.pythonPath = path;
+			console.log(this.pythonPath);
+			console.log(path);
+		});
+	}
 	/**
 	 * Check Debug Configuration before DebugSession is launched
 	 */
@@ -83,39 +92,96 @@ class PythonCppConfigurationProvider implements vscode.DebugConfigurationProvide
 				return undefined;	// abort launch
 			});
 		}
-		// Make sure the user has defined the properties 'pythonLaunchName' & 'cppAttachName
-		if(!config.pythonLaunchName || !config.cppAttachName){
-			let msg = "Please make sure to define 'pythonLaunchName' & 'cppAttachName' for pythonCpp in your launch.json file";
-			return vscode.window.showInformationMessage(msg).then(_ => {
-				return undefined;	// abort launch
-			});
-		}
 
-		// Get the launch.json configurations
 		if(!folder){
 			let message = "Working folder not found, open a folder and try again" ;
 			vscode.window.showErrorMessage(message);
 			return undefined;
 		}
 
-		let pythonLaunchName = getConfig(config.pythonLaunchName, folder);
-		let cppAttachName = getConfig(config.cppAttachName, folder);
-		
-		if(!pythonLaunchName || !cppAttachName){
-			let message = "Please make sure you have a configurations with the names '" + config.pythonLaunchName + "' & '" + config.cppAttachName + "' in your launch.json file.";
-			vscode.window.showErrorMessage(message);
-			return undefined;
+		// Python Launch configuration can be set manually or automtically with the default settings
+		let pythonLaunch;
+		if(!config.pythonConfig || config.pythonConfig === "manual"){
+			// Make sure the user has defined the properties 'pythonLaunchName' & 'cppAttachName
+			if(!config.pythonLaunchName){
+				let msg = "Please make sure to define 'pythonLaunchName' for pythonCpp in your launch.json file or set 'pythonConfig' to default";
+				return vscode.window.showInformationMessage(msg).then(_ => {
+					return undefined;	// abort launch
+				});
+			} 
+			else{
+				pythonLaunch = getConfig(config.pythonLaunchName, folder);
+				if(!pythonLaunch){
+					let message = "Please make sure you have a configurations with the names '" + config.pythonLaunchName + "' in your launch.json file.";
+					vscode.window.showErrorMessage(message);
+					return undefined;
+				}
+			}
+		}
+		else if(config.pythonConfig === "default"){
+			pythonLaunch = {
+				"name": "Python: Current File",
+				"type": "python",
+				"request": "launch",
+				"program": "${file}",
+				"console": "integratedTerminal"
+			};
 		}
 
-		cppAttachName["processId"] = "";
+		// Python Launch configuration can be set manually or automtically with the default settings
+		let cppAttach;
+		if(!config.cppConfig || config.cppConfig === "manual"){
+			// Make sure the user has defined the properties 'pythonLaunchName' & 'cppAttachName
+			if(!config.cppAttachName){
+				let msg = "Please make sure to define 'cppAttachName' for pythonCpp in your launch.json file";
+				return vscode.window.showInformationMessage(msg).then(_ => {
+					return undefined;	// abort launch
+				});
+			} 
+			else{
+				cppAttach = getConfig(config.cppAttachName, folder);
+				if(!cppAttach){
+					let message = "Please make sure you have a configurations with the names '" + config.cppAttachName + "' in your launch.json file.";
+					vscode.window.showErrorMessage(message);
+					return undefined;
+				}
+				cppAttach["processId"] = "";
+			}
+		}
+		else if(config.cppConfig === "default (win) Attach"){
+			cppAttach = {
+				"name": "(Windows) Attach",
+				"type": "cppvsdbg",
+				"request": "attach",
+				"processId": ""
+			};
+		}
+		else if(config.cppConfig === "default (gdb) Attach"){
+			cppAttach = {
+				"name": "(gdb) Attach",
+				"type": "cppdbg",
+				"request": "attach",
+				"program": this.pythonPath,
+				"processId": "",
+				"MIMode": "gdb",
+				"setupCommands": [
+					{
+						"description": "Enable pretty-printing for gdb",
+						"text": "-enable-pretty-printing",
+						"ignoreFailures": true
+					}
+				]
+			}
+		}
 
 		/* 
 			We have to stringify both python and cpp configs as they might use commands (for example command:pickprocess) 
 			that this extension hasn't defined and would cause an error. We need to make sure to JSON.parse(...) them 
 			before handing them to the debuggers.
 		*/
-		config.pythonLaunch = JSON.stringify(pythonLaunchName);
-		config.cppAttach = JSON.stringify(cppAttachName);
+		console.log(config)
+		config.pythonLaunch = JSON.stringify(pythonLaunch);
+		config.cppAttach = JSON.stringify(cppAttach);
 		return config;
 	}
 
@@ -225,9 +291,7 @@ class PythonCppConfigurationProvider implements vscode.DebugConfigurationProvide
 
 }
 
-
-
-function getConfig(name:string, folder:WorkspaceFolder): JSON | undefined{
+function getConfig(name:string, folder:vscode.WorkspaceFolder): JSON | undefined{
 	const launchConfigs = vscode.workspace.getConfiguration('launch', folder.uri);
 	const values: JSON | undefined = launchConfigs.get('configurations');
 	if(!values){
