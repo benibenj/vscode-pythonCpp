@@ -71,19 +71,10 @@ export function activatePythonCppDebug(context: vscode.ExtensionContext, factory
 
 class PythonCppConfigurationProvider implements vscode.DebugConfigurationProvider {
 
-	pythonPath = "notpython";
-
-	public constructor(){
-		this.getPythonPath(null).then(path => {
-			this.pythonPath = path;
-			console.log(this.pythonPath);
-			console.log(path);
-		});
-	}
 	/**
 	 * Check Debug Configuration before DebugSession is launched
 	 */
-	resolveDebugConfiguration(folder: WorkspaceFolder | undefined, config: DebugConfiguration, token?: CancellationToken): ProviderResult<DebugConfiguration> {
+	async resolveDebugConfiguration(folder: WorkspaceFolder | undefined, config: DebugConfiguration, token?: CancellationToken): Promise<DebugConfiguration|undefined> {
 		
 		// if launch.json is missing or empty
 		if (!config.type && !config.request && !config.name) {
@@ -155,13 +146,14 @@ class PythonCppConfigurationProvider implements vscode.DebugConfigurationProvide
 				"request": "attach",
 				"processId": ""
 			};
+			console.log("hit win config")
 		}
 		else if(config.cppConfig === "default (gdb) Attach"){
 			cppAttach = {
 				"name": "(gdb) Attach",
 				"type": "cppdbg",
 				"request": "attach",
-				"program": this.pythonPath,
+				"program": await this.getPythonPath(null),
 				"processId": "",
 				"MIMode": "gdb",
 				"setupCommands": [
@@ -179,7 +171,6 @@ class PythonCppConfigurationProvider implements vscode.DebugConfigurationProvide
 			that this extension hasn't defined and would cause an error. We need to make sure to JSON.parse(...) them 
 			before handing them to the debuggers.
 		*/
-		console.log(config)
 		config.pythonLaunch = JSON.stringify(pythonLaunch);
 		config.cppAttach = JSON.stringify(cppAttach);
 		return config;
@@ -191,7 +182,7 @@ class PythonCppConfigurationProvider implements vscode.DebugConfigurationProvide
             configuration: vscode.DebugConfiguration;
 			type:string;
         }
-		console.log(await this.getPythonPath(null));
+		
 		const gdbConfig : vscode.DebugConfiguration = {
             "name": "(gdb) Attach",
             "type": "cppdbg",
