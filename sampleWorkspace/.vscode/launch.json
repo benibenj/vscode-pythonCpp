@@ -5,19 +5,13 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "(Windows) Attach",
-      "type": "cppvsdbg",
-      "request": "attach",
-      "processId": ""
-    },
-    {
       "name": "(gdb) Attach",
       "type": "cppdbg",
       "request": "attach",
-      "program": "",
+      "program": "/usr/bin/python3.6",
       "processId": "",
       "MIMode": "gdb",
-      "miDebuggerPath": "C:\\Program Files\\mingw-w64\\x86_64-8.1.0-posix-seh-rt_v6-rev0\\mingw64\\bin\\gdb.exe",
+      "miDebuggerPath": "gdb",
       "setupCommands": [
         {
           "description": "Enable pretty-printing for gdb",
@@ -31,7 +25,7 @@
       "type": "pythoncpp",
       "request": "launch",
       "pythonLaunchName": "Python: Current File",
-      "cppAttachName": "(Windows) Attach",
+      "cppAttachName": "(gdb) Attach",
     },
     {
       "name": "Python: Current File",

@@ -5,7 +5,7 @@
     extern "C" {
 #endif
 
-_declspec(dllexport) int add(int x, int y);
+int add(int x, int y);
 
 #ifdef __cplusplus
     }
