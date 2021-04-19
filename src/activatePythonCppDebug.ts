@@ -71,7 +71,7 @@ export function activatePythonCppDebug(context: vscode.ExtensionContext, factory
 
 class PythonCppConfigurationProvider implements vscode.DebugConfigurationProvider {
 
-	pythonPath = "python";
+	pythonPath = "notpython";
 
 	public constructor(){
 		this.getPythonPath(null).then(path => {
@@ -191,7 +191,7 @@ class PythonCppConfigurationProvider implements vscode.DebugConfigurationProvide
             configuration: vscode.DebugConfiguration;
 			type:string;
         }
-
+		console.log(await this.getPythonPath(null));
 		const gdbConfig : vscode.DebugConfiguration = {
             "name": "(gdb) Attach",
             "type": "cppdbg",
