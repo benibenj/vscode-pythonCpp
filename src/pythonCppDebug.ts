@@ -60,9 +60,6 @@ export class PythonCppDebugSession extends LoggingDebugSession {
 		pyConf = JSON.parse(args.pythonLaunch);
 		cppConf = JSON.parse(args.cppAttach);
 		
-		console.log(pyConf);
-		console.log(cppConf);
-		
 		// We force the Debugger to stopOnEntry so we can attach the cpp debugger
 		let oldStopOnEntry : boolean = pyConf.stopOnEntry ? true : false;
 		pyConf.stopOnEntry = true;
