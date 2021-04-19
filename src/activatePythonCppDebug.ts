@@ -146,7 +146,6 @@ class PythonCppConfigurationProvider implements vscode.DebugConfigurationProvide
 				"request": "attach",
 				"processId": ""
 			};
-			console.log("hit win config")
 		}
 		else if(config.cppConfig === "default (gdb) Attach"){
 			cppAttach = {
@@ -164,6 +163,7 @@ class PythonCppConfigurationProvider implements vscode.DebugConfigurationProvide
 					}
 				]
 			}
+			console.log(cppAttach);
 		}
 
 		/* 
