@@ -92,6 +92,9 @@ class PythonCppConfigurationProvider implements vscode.DebugConfigurationProvide
 
 		// Python Launch configuration can be set manually or automtically with the default settings
 		let pythonLaunch;
+		if(config.entirePythonConfig){
+			pythonLaunch = config.entirePythonConfig
+		}
 		if(!config.pythonConfig || config.pythonConfig === "manual"){
 			// Make sure the user has defined the properties 'pythonLaunchName' & 'cppAttachName
 			if(!config.pythonLaunchName){
@@ -121,7 +124,10 @@ class PythonCppConfigurationProvider implements vscode.DebugConfigurationProvide
 
 		// Python Launch configuration can be set manually or automtically with the default settings
 		let cppAttach;
-		if(!config.cppConfig || config.cppConfig === "manual"){
+		if(config.entireCppConfig){
+			cppAttach = config.entireCppConfig
+		}
+		else if(!config.cppConfig || config.cppConfig === "manual"){
 			// Make sure the user has defined the properties 'pythonLaunchName' & 'cppAttachName
 			if(!config.cppAttachName){
 				let msg = "Please make sure to define 'cppAttachName' for pythonCpp in your launch.json file";

@@ -54,13 +54,14 @@ export class PythonCppDebugSession extends LoggingDebugSession {
 
 		if(os.platform().startsWith("win")){
 			// We double all backslashes inside a string so that JSON.parse() doesn't crash due to handling '\' as escape charecter on Windows
-			pyConf = JSON.parse(this.doubleBackslash(args.pythonLaunch));
-			cppConf = JSON.parse(this.doubleBackslash(args.cppAttach));
+			args.pythonLaunch = this.doubleBackslash(args.pythonLaunch);
+			args.cppAttach = this.doubleBackslash(args.cppAttach);
 		}
-		else{
-			pyConf = JSON.parse(args.pythonLaunch);
-			cppConf = JSON.parse(args.cppAttach);
-		}
+		pyConf = JSON.parse(args.pythonLaunch);
+		cppConf = JSON.parse(args.cppAttach);
+		
+		console.log(pyConf);
+		console.log(cppConf);
 		
 		// We force the Debugger to stopOnEntry so we can attach the cpp debugger
 		let oldStopOnEntry : boolean = pyConf.stopOnEntry ? true : false;

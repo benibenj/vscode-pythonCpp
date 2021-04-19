@@ -188,7 +188,7 @@
                   "default"
                 ],
                 "description": "Pick 'default' if you wish to use the default Python config, otherwise 'manual' and specify the 'pythonLaunchName' attribute",
-                "default": "manuel"
+                "default": "manual"
               },
               "cppConfig":{
                 "enum":[
@@ -196,13 +196,29 @@
                   "default (win) Attach",
                   "default (gdb) Attach"
                 ],
-                "enumDescription": [
-                  "Specify the 'cppAttachName' attribute to use the C++ Attach configuration from your launch.json file",
-                  "The C++ debugger will be launched with the default '(win) Attach' configuration",
-                  "The C++ debugger will be launched with the default '(gdb) Attach' configuration"
-                ],
                 "description": "Pick 'default (win)/(gdb)' if you wish to use the default configuration, otherwise 'manual' and specify the 'cppAttachName' attribute",
                 "default": "manual"
+              },
+              "entirePythonConfig":{
+                "type": "object",
+                "description": "If defined, the Python debugger will start with this configuration.",
+                "default":  {
+                  "name": "Python: Current File",
+                  "type": "python",
+                  "request": "launch",
+                  "program": "${file}",
+                  "console": "integratedTerminal"
+                }
+              },
+              "entireCppConfig":{
+                "type": "object",
+                "description": "If defined, the C++ debugger will start with this configuration.",
+                "default":  {
+                  "name": "(Windows) Attach",
+                  "type": "cppvsdbg",
+                  "request": "attach",
+                  "processId": "${command:pickProcess}"
+                }
               }
             }
           }
