@@ -163,7 +163,6 @@ class PythonCppConfigurationProvider implements vscode.DebugConfigurationProvide
 					}
 				]
 			}
-			console.log(cppAttach);
 		}
 
 		/* 
