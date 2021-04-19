@@ -1,36 +1,58 @@
 {
   "name": "pythoncpp-debug",
-  "displayName": "PythonCpp Debug",
-  "version": "0.1.0",
-  "publisher": "benjamin simmonds",
-  "description": "Extension for starting the Python & Cpp debugger on the same process in VScode",
+  "displayName": "Python C++ Debug",
+  "version": "0.2.7",
+  "publisher": "benjamin-simmonds",
+  "description": "Extension for starting the Python & C++ debugger on the same process in VScode",
   "author": {
     "name": "Benjamin Simmonds",
-    "email": "BenjaminSimmonds@student.ethz.ch"
+    "email": "Benjaminsimmonds@outlook.com"
   },
   "license": "MIT",
   "keywords": [
-    "multi-root ready"
+    "python",
+    "cpp",
+    "C",
+    "C++",
+    "C++ Python Debug",
+    "C++ Python Debugger",
+    "Debug Python C++",
+    "python and c++",
+    "python & c++",
+    "python c++ debugger",
+    "native",
+    "python debug",
+    "python native debug",
+    "python C++ Debug",
+    "debugger",
+    "python attach",
+    "C++ attach",
+    "Cpp attach",
+    "Python attach C++",
+    "debug python c++",
+    "ctypes"
   ],
   "engines": {
     "vscode": "^1.49.0"
   },
   "categories": [
-    "Debuggers"
+    "Debuggers",
+    "Data Science"
   ],
   "private": true,
-  "extensionDependencies":[
+  "icon": "images/icon.png",
+  "extensionDependencies": [
     "ms-python.python",
     "ms-vscode.cpptools"
   ],
-  "homepage": "https://https://github.com/benibenj/vscode-pythonCpp/",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/benibenj/vscode-pythonCpp/"
-    },
-    "bugs": {
-        "url": "https://https://github.com/benibenj/vscode-pythonCpp//issues"
-    },
+  "homepage": "https://github.com/benibenj/vscode-pythonCpp/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/benibenj/vscode-pythonCpp/"
+  },
+  "bugs": {
+    "url": "https://github.com/benibenj/vscode-pythonCpp/issues"
+  },
   "scripts": {
     "vscode:prepublish": "yarn run package-ext && yarn run package-web",
     "compile": "tsc -p ./",
@@ -46,7 +68,6 @@
     "watch-web": "webpack --watch --devtool nosources-source-map --info-verbosity verbose --config ./build/web-extension.webpack.config.js",
     "package-web": "webpack --mode production --config ./build/web-extension.webpack.config.js"
   },
-  "enableProposedApi": true,
   "dependencies": {
     "await-notify": "1.0.1",
     "vscode-debugadapter": "^1.45.0"
@@ -72,6 +93,7 @@
   "browser": "./dist/web/extension.js",
   "activationEvents": [
     "onLanguage:python",
+    "onLanguage:cpp",
     "onDebugResolve:pythoncpp",
     "onCommand:extension.pythonCpp-debug.runEditorContents",
     "onCommand:extension.pythonCpp-debug.debugEditorContents"
@@ -89,30 +111,35 @@
         }
       ],
       "commandPalette": [
-				{
-					"command": "extension.pythonCpp-debug.debugEditorContents",
-					"when": "resourceLangId == python"
-				},
-				{
-					"command": "extension.pythonCpp-debug.runEditorContents",
-					"when": "resourceLangId == python"
-				}
-			]
+        {
+          "command": "extension.pythonCpp-debug.debugEditorContents",
+          "when": "resourceLangId == python"
+        },
+        {
+          "command": "extension.pythonCpp-debug.runEditorContents",
+          "when": "resourceLangId == python"
+        }
+      ]
     },
     "commands": [
       {
         "command": "extension.pythonCpp-debug.debugEditorContents",
         "title": "Debug File",
-        "category": "PythonCpp Debug",
-				"enablement": "!inDebugMode",
+        "category": "Python C++ Debug",
+        "enablement": "!inDebugMode",
         "icon": "$(debug-alt)"
       },
       {
         "command": "extension.pythonCpp-debug.runEditorContents",
         "title": "Run File",
-        "category": "PythonCpp Debug",
-				"enablement": "!inDebugMode",
+        "category": "Python C++ Debug",
+        "enablement": "!inDebugMode",
         "icon": "$(play)"
+      },
+      {
+        "command": "extension.pythonCpp-debug.restart",
+        "title": "Python C++ Debug Restart",
+        "category": "Python C++ Debug"
       }
     ],
     "breakpoints": [
@@ -120,22 +147,31 @@
         "language": "python"
       },
       {
-        "language": "python"
+        "language": "cpp"
+      },
+      {
+        "language": "c"
       }
     ],
     "debuggers": [
       {
         "type": "pythoncpp",
-        "label": "PythonCpp Debug",
+        "label": "Python C++ Debug",
+        "languages": [
+          "python",
+          "cpp",
+          "c"
+        ],
         "program": "./out/debugAdapter.js",
         "runtime": "node",
         "configurationAttributes": {
           "launch": {
-            "required": [
-              "pythonLaunchName",
-              "cppAttachName"
-            ],
             "properties": {
+              "request": {
+                "type": "string",
+                "description": "Only launch is supported",
+                "default": "launch"
+              },
               "pythonLaunchName": {
                 "type": "string",
                 "description": "The name of your python launch config",
@@ -145,26 +181,53 @@
                 "type": "string",
                 "description": "The name of your cpp attach config",
                 "default": "(Windows) Attach"
+              },
+              "pythonConfig":{
+                "enum":[
+                  "manual",
+                  "default"
+                ],
+                "description": "Pick 'default' if you wish to use the default Python config, otherwise 'manual' and specify the 'pythonLaunchName' attribute",
+                "default": "manuel"
+              },
+              "cppConfig":{
+                "enum":[
+                  "manual",
+                  "default (win) Attach",
+                  "default (gdb) Attach"
+                ],
+                "enumDescription": [
+                  "Specify the 'cppAttachName' attribute to use the C++ Attach configuration from your launch.json file",
+                  "The C++ debugger will be launched with the default '(win) Attach' configuration",
+                  "The C++ debugger will be launched with the default '(gdb) Attach' configuration"
+                ],
+                "description": "Pick 'default (win)/(gdb)' if you wish to use the default configuration, otherwise 'manual' and specify the 'cppAttachName' attribute",
+                "default": "manual"
               }
             }
           }
         },
-        "initialConfigurations": [
-          {
-            "type": "pythoncpp",
-            "pythonLaunchName": "Python: Current File",
-            "cppAttachName": "(Windows) Attach"
-          }
-        ],
         "configurationSnippets": [
           {
-            "label": "PythonCpp Debug: Launch",
+            "label": "Python C++ Debug (Windows)",
+            "description": "A new configuration for a Python C++ debugger",
             "body": {
-              "name": "PythonCpp Debug",
+              "name": "Python C++ Debug",
               "type": "pythoncpp",
               "request": "launch",
               "pythonLaunchName": "Python: Current File",
               "cppAttachName": "(Windows) Attach"
+            }
+          },
+          {
+            "label": "Python C++ Debug (gdb)",
+            "description": "A new configuration for a Python C++ debugger",
+            "body": {
+              "name": "Python C++ Debug",
+              "type": "pythoncpp",
+              "request": "launch",
+              "pythonLaunchName": "Python: Current File",
+              "cppAttachName": "(gdb) Attach"
             }
           }
         ]

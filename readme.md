@@ -1,39 +1,60 @@
-# VS Code Mock Debug
+# VS Code Python C++ Debug
 
-This is a starter sample for developing VS Code debug adapters.
+This debugger starts a python debugger and attaches a C++ debugger to it for debugging python code that calls functions from shared object files (.so/.dll).
 
-**Mock Debug** simulates a debug adapter for Visual Studio Code.
-It supports *step*, *continue*, *breakpoints*, *exceptions*, and
-*variable access* but it is not connected to any real debugger.
+![vscode-pythonCpp example](images/pythonCppExample.gif)
 
-The sample is meant as an educational piece showing how to implement a debug
-adapter for VS Code. It can be used as a starting point for developing a real adapter.
+## Python C++ Debug Requirements
 
-More information about how to develop a new debug adapter can be found
-[here](https://code.visualstudio.com/docs/extensions/example-debuggers).
+To use this debug-extension you must have the following extensions installed:
+* Python by Microsoft (ms-python.python)
+* C/C++ by Microsoft (ms-vscode.cpptools)
 
-## Using Mock Debug
+## Launch.json
 
-* Install the **Mock Debug** extension in VS Code.
-* Create a new 'program' file `readme.md` and enter several lines of arbitrary text.
-* Switch to the debug viewlet and press the gear dropdown.
-* Select the debug environment "Mock Debug".
-* Press the green 'play' button to start debugging.
+To use this extension you must have the following 3 configurations in your launch.json file
+* C/C++ attach config e.g. Windows: `(Windows) Attach`, Linux: `(gdb) Attach`
+* Python launch config
+* Python C++ Debug config with the following attributes:
+  - **pythonLaunchName**: The name of your C++ Attach configuration
+  - **cppAttachName**: The name of your Python Launch configuration
 
-You can now 'step through' the `readme.md` file, set and hit breakpoints, and run into exceptions (if the word exception appears in a line).
+ The following is an example launch.json file for windows users. If your working on Linux make sure to have a `(gdb) Attach` configuration instead of `(Windows) Attach`.
 
-![Mock Debug](images/mock-debug.gif)
+```json
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "(Windows) Attach",
+      "type": "cppvsdbg",
+      "request": "attach",
+      "processId": ""
+    },
+    {
+      "name": "Python C++ Debug",
+      "type": "pythoncpp",
+      "request": "launch",
+      "pythonLaunchName": "Python: Current File",
+      "cppAttachName": "(Windows) Attach",
+    },
+    {
+      "name": "Python: Current File",
+      "type": "python",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal"
+    }
+  ]
+}
 
-## Build and Run
+```
 
-[![build status](https://travis-ci.org/Microsoft/vscode-mock-debug.svg?branch=master)](https://travis-ci.org/Microsoft/vscode-mock-debug)
-[![build status](https://ci.appveyor.com/api/projects/status/empmw5q1tk6h1fly/branch/master?svg=true)](https://ci.appveyor.com/project/weinand/vscode-mock-debug)
+## What the debugger does
 
+When you start Python C++ Debug it launches a Python debugger and attaches a C++ debugger to it by using the processId of the python debugger. As soon as both debuggers are attached the Python C++ debugger terminates.
 
-* Clone the project [https://github.com/Microsoft/vscode-mock-debug.git](https://github.com/Microsoft/vscode-mock-debug.git)
-* Open the project folder in VS Code.
-* Press `F5` to build and launch Mock Debug in another VS Code window. In that window:
-  * Open a new workspace, create a new 'program' file `readme.md` and enter several lines of arbitrary text.
-  * Switch to the debug viewlet and press the gear dropdown.
-  * Select the debug environment "Mock Debug".
-  * Press `F5` to start debugging.
+## Additional information
+* Make sure the shared object files (.so/.dll) you are loading your functions from have been compiled with `debug info`.
+* Between consecutive `breakpoints` where one is located in python and the other in the C++ code, only the 'continue' button will work correctly.
+* Additionally, the `restart button` isn't supported due to the Python debugger changing its processId after a restart. 

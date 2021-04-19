@@ -11,7 +11,6 @@ let extPy;
 let extCpp;
 
 export async function activate(context: vscode.ExtensionContext) {
-
 	// run the debug adapter inside the extension and directly talk to it
 
 	// Check if the user has the extension installed and if so, activate them
@@ -22,7 +21,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		return;
 	}
 	if(!extCpp){
-		vscode.window.showErrorMessage("You must have the official Cpp extension to use this debugger!");
+		vscode.window.showErrorMessage("You must have the official C++ extension to use this debugger!");
 		return;
 	}
 	if(!extPy.isActive){
@@ -37,18 +36,7 @@ export async function activate(context: vscode.ExtensionContext) {
 }
 
 export function deactivate() {
-	// Call the deactivate function of the extensions we activated
-	if(extPy && extPy.isActive){
-		extPy.deactivate().then(res =>{
-			console.log(res);
-			console.log("Deactivating Python Extension");
-		});
-		
-	}
-	if(extCpp && extCpp.isActive){
-		extCpp.deactivate();
-		console.log("Deactivating Cpp Extension");
-	}
+	
 }
 
 
