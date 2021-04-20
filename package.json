@@ -1,7 +1,7 @@
 {
   "name": "pythoncpp-debug",
   "displayName": "Python C++ Debug",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "publisher": "benjamin-simmonds",
   "description": "Extension for starting the Python & C++ debugger on the same process in VScode",
   "author": {
@@ -182,16 +182,16 @@
                 "description": "The name of your cpp attach config",
                 "default": "(Windows) Attach"
               },
-              "pythonConfig":{
-                "enum":[
+              "pythonConfig": {
+                "enum": [
                   "manual",
                   "default"
                 ],
                 "description": "Pick 'default' if you wish to use the default Python config, otherwise 'manual' and specify the 'pythonLaunchName' attribute",
                 "default": "manual"
               },
-              "cppConfig":{
-                "enum":[
+              "cppConfig": {
+                "enum": [
                   "manual",
                   "default (win) Attach",
                   "default (gdb) Attach"
@@ -199,10 +199,10 @@
                 "description": "Pick 'default (win)/(gdb)' if you wish to use the default configuration, otherwise 'manual' and specify the 'cppAttachName' attribute",
                 "default": "manual"
               },
-              "entirePythonConfig":{
+              "entirePythonConfig": {
                 "type": "object",
                 "description": "If defined, the Python debugger will start with this configuration.",
-                "default":  {
+                "default": {
                   "name": "Python: Current File",
                   "type": "python",
                   "request": "launch",
@@ -210,10 +210,10 @@
                   "console": "integratedTerminal"
                 }
               },
-              "entireCppConfig":{
+              "entireCppConfig": {
                 "type": "object",
                 "description": "If defined, the C++ debugger will start with this configuration.",
-                "default":  {
+                "default": {
                   "name": "(Windows) Attach",
                   "type": "cppvsdbg",
                   "request": "attach",
