@@ -10,14 +10,36 @@ To use this debug-extension you must have the following extensions installed:
 * Python by Microsoft (ms-python.python)
 * C/C++ by Microsoft (ms-vscode.cpptools)
 
-## Launch.json
 
-To use this extension you must have the following 3 configurations in your launch.json file
-* C/C++ attach config e.g. Windows: `(Windows) Attach`, Linux: `(gdb) Attach`
-* Python launch config
-* Python C++ Debug config with the following attributes:
-  - **pythonLaunchName**: The name of your C++ Attach configuration
-  - **cppAttachName**: The name of your Python Launch configuration
+## Default Configurations:
+
+If you plan to use the default configuration of the python and/or C++ debugger, you don't need to define them manually.
+
+* **Python:** `pythonConfig: default` will start the Python debugger with the default configuration (Python: Current File)
+  
+* **C++:** 
+  - `cppConfig: default (win) Attach` will attach the C++ debugger with the `(Windows) Attach` config.
+  - `cppConfig: default (gdb) Attach` will attach the C++ debugger with the `(gdb) Attach` config. This will also set the program path automatically to the path of the current python interpreter and lookup the gdb path.
+
+```json
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python C++ Debug",
+      "type": "pythoncpp",
+      "request": "launch",
+      "pythonConfig": "default",
+      "cppConfig": "default (win) Attach",
+    }
+  ]
+}
+
+```
+
+## Custom Configuartions:
+
+To manually define the configurations you can set the attributes `pythonLaunchName` & `cppAttachName` to the name of the configuration you wish to use from your launch.json file.
 
  The following is an example launch.json file for windows users. If your working on Linux make sure to have a `(gdb) Attach` configuration instead of `(Windows) Attach`.
 
@@ -26,17 +48,17 @@ To use this extension you must have the following 3 configurations in your launc
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "(Windows) Attach",
-      "type": "cppvsdbg",
-      "request": "attach",
-      "processId": ""
-    },
-    {
       "name": "Python C++ Debug",
       "type": "pythoncpp",
       "request": "launch",
       "pythonLaunchName": "Python: Current File",
       "cppAttachName": "(Windows) Attach",
+    },
+    {
+      "name": "(Windows) Attach",
+      "type": "cppvsdbg",
+      "request": "attach",
+      "processId": ""
     },
     {
       "name": "Python: Current File",

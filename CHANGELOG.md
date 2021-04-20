@@ -1,4 +1,8 @@
-# 0.2.4 - 0.2.7
+## 0.2.8
+* Added default configurations for python and C++ by setting the attributes `pythonConfig` and `cppConfig`
+* Added the attributes `entireCppConfig` and `entirePythonConfig` which if defined start the debugger with the configuration passed to the attribute
+
+## 0.2.4 - 0.2.7
 * Fixing Github Repo links
 * Small fixes
 * ProcessId of gdb/windows attach will be set to empty string due to problems with commands in the configuration for C++
