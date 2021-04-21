@@ -6,8 +6,8 @@ import {
 	LoggingDebugSession, TerminatedEvent
 } from 'vscode-debugadapter';
 import * as vscode from 'vscode';
-import * as os from 'os';
 import { DebugProtocol } from 'vscode-debugprotocol';
+import { getPythonPath } from './activatePythonCppDebug';
 
 
 interface ILaunchRequestArguments extends DebugProtocol.LaunchRequestArguments {
@@ -18,10 +18,18 @@ interface ILaunchRequestArguments extends DebugProtocol.LaunchRequestArguments {
 	/** run without debugging */
 	noDebug?: boolean;
 
-	pythonLaunchName: string;
-	pythonLaunch: string;
-	cppAttachName: string;
-	cppAttach: string;
+
+	pythonLaunchName?;
+	pythonLaunch;
+	pythonConfig?;
+	entirePythonConfig?;
+
+	cppAttachName?;
+	cppAttach;
+	cppConfig?;
+	entireCppConfig?;
+
+	optimizedLaunch?: boolean;
 }
 
 export class PythonCppDebugSession extends LoggingDebugSession {
@@ -42,23 +50,22 @@ export class PythonCppDebugSession extends LoggingDebugSession {
 	}
 
 	protected async launchRequest(response: DebugProtocol.LaunchResponse, args: ILaunchRequestArguments) {
-	
+
 		if(!this.folder){
 			let message = "Working folder not found, open a folder and try again" ;
 			vscode.window.showErrorMessage(message);
 			return;
 		}
 
-		let pyConf;
-		let cppConf;
-
-		if(os.platform().startsWith("win")){
-			// We double all backslashes inside a string so that JSON.parse() doesn't crash due to handling '\' as escape charecter on Windows
-			args.pythonLaunch = this.doubleBackslash(args.pythonLaunch);
-			args.cppAttach = this.doubleBackslash(args.cppAttach);
+		let config = await this.checkConfig(args, this.folder);
+		if(!config){
+			this.sendEvent(new TerminatedEvent());
+			return;
 		}
-		pyConf = JSON.parse(args.pythonLaunch);
-		cppConf = JSON.parse(args.cppAttach);
+		args = config;
+
+		let pyConf = args.pythonLaunch;
+		let cppConf = args.cppAttach;
 		
 		// We force the Debugger to stopOnEntry so we can attach the cpp debugger
 		let oldStopOnEntry : boolean = pyConf.stopOnEntry ? true : false;
@@ -101,7 +108,7 @@ export class PythonCppDebugSession extends LoggingDebugSession {
 							vscode.debug.activeDebugSession.customRequest('continue');
 						}
 					},
-					500);
+					(!args.optimizedLaunch) ? 500 : 0);
 				});
 			});
 		});
@@ -110,11 +117,120 @@ export class PythonCppDebugSession extends LoggingDebugSession {
 		this.sendResponse(response);
 	}
 
-	// We double all backslashes inside a string and return it
-	protected doubleBackslash(s:string) : string{
-		 return s.split('').map(function(v) {
-			return v === "\\" ? v + v : v;
-		  }).join('');
+	protected async checkConfig(config:ILaunchRequestArguments, folder:vscode.WorkspaceFolder): Promise<ILaunchRequestArguments | undefined>{
+		
+		// Python Launch configuration can be set manually or automtically with the default settings
+		let pythonLaunch;
+		if(config.entirePythonConfig){
+			pythonLaunch = config.entirePythonConfig
+		}
+		else if(!config.pythonConfig || config.pythonConfig === "manual"){
+			// Make sure the user has defined the properties 'pythonLaunchName' & 'cppAttachName
+			if(!config.pythonLaunchName){
+				let msg = "Please make sure to define 'pythonLaunchName' for pythonCpp in your launch.json file or set 'pythonConfig' to default";
+				return vscode.window.showErrorMessage(msg).then(_ => {
+					return undefined;	// abort launch
+				});
+			} 
+			else{
+				pythonLaunch = getConfig(config.pythonLaunchName, folder);
+				if(!pythonLaunch){
+					let message = "Please make sure you have a configurations with the names '" + config.pythonLaunchName + "' in your launch.json file.";
+					vscode.window.showErrorMessage(message);
+					return undefined;
+				}
+			}
+		}
+		else if(config.pythonConfig === "default"){
+			pythonLaunch = {
+				"name": "Python: Current File",
+				"type": "python",
+				"request": "launch",
+				"program": "${file}",
+				"console": "integratedTerminal"
+			};
+		}
+
+		// C++ launch configuration can be set manually or automtically with the default settings
+		let cppAttach;
+		if(config.entireCppConfig){
+			cppAttach = config.entireCppConfig
+		}
+		else if(!config.cppConfig || config.cppConfig === "manual"){
+			// Make sure the user has defined the property 'cppAttachName'
+			if(!config.cppAttachName){
+				let msg = "Make sure to either define 'cppAttachName' for pythonCpp in your launch.json file or use the default configurations with the attribute 'cppConfig'";
+				return vscode.window.showErrorMessage(msg).then(_ => {
+					return undefined;	// abort launch
+				});
+			} 
+			else{
+				cppAttach = getConfig(config.cppAttachName, folder);
+				if(!cppAttach){
+					let message = "Make sure you have a configurations with the names '" + config.cppAttachName + "' in your launch.json file.";
+					vscode.window.showErrorMessage(message);
+					return undefined;
+				}
+				cppAttach["processId"] = "";
+			}
+		}
+		else if(config.cppConfig === "default (win) Attach"){
+			cppAttach = {
+				"name": "(Windows) Attach",
+				"type": "cppvsdbg",
+				"request": "attach",
+				"processId": ""
+			};
+		}
+		else if(config.cppConfig === "default (gdb) Attach"){
+			cppAttach = {
+				"name": "(gdb) Attach",
+				"type": "cppdbg",
+				"request": "attach",
+				"program": await getPythonPath(null),
+				"processId": "",
+				"MIMode": "gdb",
+				"setupCommands": [
+					{
+						"description": "Enable pretty-printing for gdb",
+						"text": "-enable-pretty-printing",
+						"ignoreFailures": true
+					}
+				]
+			}
+		}
+
+		/* 
+			We have to stringify both python and cpp configs as they might use commands (for example command:pickprocess) 
+			that this extension hasn't defined and would cause an error. We need to make sure to JSON.parse(...) them 
+			before handing them to the debuggers.
+		*/
+		config.pythonLaunch = pythonLaunch;
+		config.cppAttach = cppAttach;
+
+		return config;
+	}
+}
+
+function getConfig(name:string, folder:vscode.WorkspaceFolder): JSON | undefined{
+	const launchConfigs = vscode.workspace.getConfiguration('launch', folder.uri);
+	const values: JSON | undefined = launchConfigs.get('configurations');
+	if(!values){
+		let message = "Unexpected error with the launch.json file" ;
+		vscode.window.showErrorMessage(message);
+		return undefined;
 	}
 
+	return nameDefinedInLaunch(name, values);
+}
+
+function nameDefinedInLaunch(name:string, launch:JSON): JSON | undefined {
+	let i = 0;
+	while(launch[i]){
+		if(launch[i].name === name){
+			return launch[i];
+		}
+		i++;
+	}
+	return undefined;
 }

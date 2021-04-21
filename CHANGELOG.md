@@ -1,3 +1,9 @@
+## 0.2.9
+* Chnaged Name from `Python C++ Debug` to `Python C++ Debugger` for improved Marketplace search results
+* Small fixes
+* Internal Design changes
+* Added the attribute `optimzedLaunch`
+
 ## 0.2.8
 * Added default configurations for python and C++ by setting the attributes `pythonConfig` and `cppConfig`
 * Added the attributes `entireCppConfig` and `entirePythonConfig` which if defined start the debugger with the configuration passed to the attribute

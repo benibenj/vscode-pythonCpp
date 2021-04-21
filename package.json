@@ -1,6 +1,6 @@
 {
   "name": "pythoncpp-debug",
-  "displayName": "Python C++ Debug",
+  "displayName": "Python C++ Debugger",
   "version": "0.2.8",
   "publisher": "benjamin-simmonds",
   "description": "Extension for starting the Python & C++ debugger on the same process in VScode",
@@ -11,15 +11,16 @@
   "license": "MIT",
   "keywords": [
     "python",
-    "cpp",
-    "C",
-    "C++",
+    "python C++ Debug",
+    "python c++ debugger",
     "C++ Python Debug",
     "C++ Python Debugger",
+    "C++",
+    "cpp",
+    "C",
     "Debug Python C++",
     "python and c++",
     "python & c++",
-    "python c++ debugger",
     "native",
     "python debug",
     "python native debug",
@@ -125,21 +126,21 @@
       {
         "command": "extension.pythonCpp-debug.debugEditorContents",
         "title": "Debug File",
-        "category": "Python C++ Debug",
+        "category": "Python C++ Debugger",
         "enablement": "!inDebugMode",
         "icon": "$(debug-alt)"
       },
       {
         "command": "extension.pythonCpp-debug.runEditorContents",
         "title": "Run File",
-        "category": "Python C++ Debug",
+        "category": "Python C++ Debugger",
         "enablement": "!inDebugMode",
         "icon": "$(play)"
       },
       {
         "command": "extension.pythonCpp-debug.restart",
-        "title": "Python C++ Debug Restart",
-        "category": "Python C++ Debug"
+        "title": "Python C++ Debugger Restart",
+        "category": "Python C++ Debugger"
       }
     ],
     "breakpoints": [
@@ -156,7 +157,7 @@
     "debuggers": [
       {
         "type": "pythoncpp",
-        "label": "Python C++ Debug",
+        "label": "Python C++ Debugger",
         "languages": [
           "python",
           "cpp",
@@ -219,16 +220,21 @@
                   "request": "attach",
                   "processId": ""
                 }
+              },
+              "optimizedLaunch": {
+                "type": "boolean",
+                "description": "If set to true, Launching the debuggers can save up to 0.5s, however, only use it if you set a breakpoint before jumping into the C++ code!",
+                "default": false
               }
             }
           }
         },
         "configurationSnippets": [
           {
-            "label": "Python C++ Debug (Windows)",
+            "label": "Python C++ Debugger (Windows)",
             "description": "A new configuration for a Python C++ debugger",
             "body": {
-              "name": "Python C++ Debug",
+              "name": "Python C++ Debugger",
               "type": "pythoncpp",
               "request": "launch",
               "pythonLaunchName": "Python: Current File",
@@ -236,10 +242,10 @@
             }
           },
           {
-            "label": "Python C++ Debug (gdb)",
+            "label": "Python C++ Debugger (gdb)",
             "description": "A new configuration for a Python C++ debugger",
             "body": {
-              "name": "Python C++ Debug",
+              "name": "Python C++ Debugger",
               "type": "pythoncpp",
               "request": "launch",
               "pythonLaunchName": "Python: Current File",
