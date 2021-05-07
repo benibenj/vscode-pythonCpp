@@ -7,6 +7,7 @@
 import * as vscode from 'vscode';
 import { WorkspaceFolder, DebugConfiguration, ProviderResult, CancellationToken } from 'vscode';
 import { PythonCppDebugSession } from './pythonCppDebug';
+import * as os from 'os';
 
 export function activatePythonCppDebug(context: vscode.ExtensionContext, factory?: vscode.DebugAdapterDescriptorFactory) {
 
@@ -18,12 +19,12 @@ export function activatePythonCppDebug(context: vscode.ExtensionContext, factory
 			}
 			if (targetResource) {
 				vscode.debug.startDebugging(undefined, {
-						type: 'pythoncpp',
-						name: 'PythonCpp Debug',
-						request: 'launch',
-						pythonLaunchName: "Python: Current File",
-              			cppAttachName: "(Windows) Attach"
-					},
+					type: 'pythoncpp',
+					name: 'PythonCpp Debug',
+					request: 'launch',
+					pythonConfig: 'default',
+					cppConfig: os.platform().startsWith("win") ? "default (win) Attach" : "default (gdb) Attach"
+				},
 					{ noDebug: true }
 				);
 			}
@@ -38,17 +39,9 @@ export function activatePythonCppDebug(context: vscode.ExtensionContext, factory
 					type: 'pythoncpp',
 					name: 'PythonCpp Debug',
 					request: 'launch',
-					pythonLaunchName: "Python: Current File",
-              		cppAttachName: "(Windows) Attach"
+					pythonConfig: 'default',
+					cppConfig: os.platform().startsWith("win") ? "default (win) Attach" : "default (gdb) Attach"
 				});
-			}
-		}),
-		vscode.commands.registerCommand('extension.pythonCpp-debug.restart', _ => {
-			console.log("Restarting PythonCpp Debug");
-			let session = vscode.debug.activeDebugSession;
-			console.log(session);
-			if(session && session.type === 'python'){
-				vscode.debug.stopDebugging(session);
 			}
 		})
 	);
@@ -57,7 +50,7 @@ export function activatePythonCppDebug(context: vscode.ExtensionContext, factory
 	const provider = new PythonCppConfigurationProvider();
 	context.subscriptions.push(vscode.debug.registerDebugConfigurationProvider('pythoncpp', provider));
 
-		
+
 
 	if (!factory) {
 		factory = new InlineDebugAdapterFactory();
@@ -74,8 +67,12 @@ class PythonCppConfigurationProvider implements vscode.DebugConfigurationProvide
 	/**
 	 * Check Debug Configuration before DebugSession is launched
 	 */
-	resolveDebugConfiguration(folder: WorkspaceFolder | undefined, config: DebugConfiguration, token?: CancellationToken): ProviderResult<DebugConfiguration | undefined> {
-		
+	resolveDebugConfiguration(
+		folder: WorkspaceFolder | undefined,
+		config: DebugConfiguration,
+		token?: CancellationToken
+	): ProviderResult<DebugConfiguration | undefined> {
+
 		// if launch.json is missing or empty
 		if (!config.type && !config.request && !config.name) {
 			let msg = "Please make sure you have a launch.json file with a configuration of type 'pythoncpp' to use this debugger";
@@ -84,22 +81,34 @@ class PythonCppConfigurationProvider implements vscode.DebugConfigurationProvide
 			});
 		}
 
-		if(!folder){
-			let msg = "Working folder not found, open a folder and try again" ;
+		if (!folder) {
+			let msg = "Working folder not found, open a folder and try again";
 			return vscode.window.showErrorMessage(msg).then(_ => {
 				return undefined;
 			});
 		}
 
-		if(!config.entirePythonConfig && ((config.pythonConfig && config.pythonConfig == 'manual') || !config.pythonConfig) && !config.pythonLaunchName){
-			let msg = "Make sure to either set 'pythonLaunchName' to the name of your python configuration or set 'pythonConfig: default'";
+		if (
+			!config.entirePythonConfig &&
+			((config.pythonConfig && config.pythonConfig == 'costum') || !config.pythonConfig) &&
+			!config.pythonLaunchName
+		) {
+			let msg = 
+			"Make sure to either set 'pythonLaunchName' to the name of " +
+			"your python configuration or set 'pythonConfig: default'";
 			return vscode.window.showErrorMessage(msg).then(_ => {
 				return undefined;	// abort launch
 			});
 		}
 
-		if(!config.entireCppConfig && ((config.cppConfig && config.cppConfig == 'manual') || !config.cppConfig) && !config.cppAttachName){
-			let msg = "Make sure to either set 'cppAttachName' to the name of your C++ configuration or set 'cppConfig' to the default confiuration you wish to use";
+		if (
+			!config.entireCppConfig &&
+			((config.cppConfig && config.cppConfig == 'costum') || !config.cppConfig) &&
+			!config.cppAttachName
+		) {
+			let msg = 
+			"Make sure to either set 'cppAttachName' to the name of " +
+			"your C++ configuration or set 'cppConfig' to the default confiuration you wish to use";
 			return vscode.window.showErrorMessage(msg).then(_ => {
 				return undefined;	// abort launch
 			});
@@ -108,49 +117,60 @@ class PythonCppConfigurationProvider implements vscode.DebugConfigurationProvide
 		return config;
 	}
 
-	async provideDebugConfigurations(folder?: vscode.WorkspaceFolder, token?: vscode.CancellationToken): Promise<vscode.DebugConfiguration[]> {
-		
-        interface MenuItem extends vscode.QuickPickItem {
-            configuration: vscode.DebugConfiguration;
-			type:string;
-        }
-		
-		const gdbConfig : vscode.DebugConfiguration = {
-            "name": "(gdb) Attach",
-            "type": "cppdbg",
-            "request": "attach",
-            "program": await getPythonPath(null),
-            "processId": "",
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            "MIMode": "gdb",
-            "miDebuggerPath": "/path/to/gdb",
-            "setupCommands": [
-                {
-                    "description": "Enable pretty-printing for gdb",
-                    "text": "-enable-pretty-printing",
-                    "ignoreFailures": true
-                }
-            ]
-        };
+	async provideDebugConfigurations(
+		folder?: vscode.WorkspaceFolder, 
+		token?: vscode.CancellationToken
+	): Promise<vscode.DebugConfiguration[]> {
 
-		const winConfig : vscode.DebugConfiguration = {
-            "name": "(Windows) Attach",
-            "type": "cppvsdbg",
-            "request": "attach",
-            "processId": ""
-        };
-		
-        const items: MenuItem[] = [
-			{ label: "Python C++ Debugger", configuration: winConfig, description: "Windows", type: "(Windows)"},
-			{ label: "Python C++ Debugger", configuration: gdbConfig, description: "GDB", type: "(gdb)"}
+		interface MenuItem extends vscode.QuickPickItem {
+			configuration: vscode.DebugConfiguration;
+			type: string;
+		}
+
+		const gdbConfig: vscode.DebugConfiguration = {
+			"name": "(gdb) Attach",
+			"type": "cppdbg",
+			"request": "attach",
+			"program": await getPythonPath(null),
+			"processId": "",
+			// eslint-disable-next-line @typescript-eslint/naming-convention
+			"MIMode": "gdb",
+			"miDebuggerPath": "/path/to/gdb or remove this attribute for the path to be found automatically",
+			"setupCommands": [
+				{
+					"description": "Enable pretty-printing for gdb",
+					"text": "-enable-pretty-printing",
+					"ignoreFailures": true
+				}
+			]
+		};
+
+		const winConfig: vscode.DebugConfiguration = {
+			"name": "(Windows) Attach",
+			"type": "cppvsdbg",
+			"request": "attach",
+			"processId": ""
+		};
+
+		const items: MenuItem[] = [
+			{ label: "Python C++ Debugger", configuration: winConfig, description: "Default", type: "Default" },
+			{ label: "Python C++ Debugger", configuration: winConfig, description: "Costum: Windows", type: "(Windows)" },
+			{ label: "Python C++ Debugger", configuration: gdbConfig, description: "Costum: GDB", type: "(gdb)" }
 		];
-		
-        const selection: MenuItem | undefined = await vscode.window.showQuickPick(items, {placeHolder: "Select a configuration"});
-        if (!selection) {
-            return []; // User canceled it.
-        }
 
-		const pythonConfig : vscode.DebugConfiguration = {
+		const selection: MenuItem | undefined = await vscode.window.showQuickPick(items, { placeHolder: "Select a configuration" });
+		if(!selection || selection.type === "Default") {
+			const defaultConfig: vscode.DebugConfiguration = {
+				"name": "Python C++ Debugger",
+				"type": "pythoncpp",
+				"request": "launch",
+				"pythonConfig": "default",
+				"cppConfig": os.platform().startsWith("win") ? "default (win) Attach" : "default (gdb) Attach"
+			  }
+			return [defaultConfig];
+		}
+
+		const pythonConfig: vscode.DebugConfiguration = {
 			"name": "Python: Current File",
 			"type": "python",
 			"request": "launch",
@@ -158,31 +178,31 @@ class PythonCppConfigurationProvider implements vscode.DebugConfigurationProvide
 			"console": "integratedTerminal"
 		};
 
-		const pythonCppConfig : vscode.DebugConfiguration = {
+		const pythonCppConfig: vscode.DebugConfiguration = {
 			"name": "Python C++ Debugger",
-            "type": "pythoncpp",
-            "request": "launch",
-            "pythonLaunchName": "Python: Current File",
-            "cppAttachName": selection.type + " Attach"
+			"type": "pythoncpp",
+			"request": "launch",
+			"pythonLaunchName": "Python: Current File",
+			"cppAttachName": selection.type + " Attach"
 		};
-		
-        return [pythonCppConfig, selection.configuration, pythonConfig];
-    }
+
+		return [pythonCppConfig, selection.configuration, pythonConfig];
+	}
 
 }
 
-export async function getPythonPath( document: vscode.TextDocument | null ): Promise<string> {
+export async function getPythonPath(document: vscode.TextDocument | null): Promise<string> {
 	try {
 		let pyExt = vscode.extensions.getExtension('ms-python.python');
-		if (!pyExt){
+		if (!pyExt) {
 			return 'python';
 		}
 
 		if (pyExt.packageJSON?.featureFlags?.usingNewInterpreterStorage) {
-			if (!pyExt.isActive){
+			if (!pyExt.isActive) {
 				await pyExt.activate();
 			}
-				
+
 			const pythonPath = pyExt.exports.settings.getExecutionDetails ?
 				pyExt.exports.settings.getExecutionDetails(
 					document?.uri
@@ -191,20 +211,20 @@ export async function getPythonPath( document: vscode.TextDocument | null ): Pro
 			return pythonPath ? pythonPath.join(' ') : 'python';
 		} else {
 			let path;
-			if (document){
+			if (document) {
 				path = vscode.workspace.getConfiguration(
 					'python',
 					document.uri
 				).get<string>('pythonPath');
 			}
-			else{
+			else {
 				path = vscode.workspace.getConfiguration(
 					'python'
 				).get<string>('pythonPath');
 			}
-			if(!path){
+			if (!path) {
 				return 'python';
-			} 
+			}
 		}
 	} catch (ignored) {
 		return 'python';

@@ -1,3 +1,8 @@
+## 0.2.10
+* Added a new Quickpick option for default configurations
+* Added a default configuration to the `Add Configuration` results in the launch.json file
+* Changed the attribute value of `pythonConfig` and `cppConfig` from `manual` to `costum`
+
 ## 0.2.9
 * Chnaged Name from `Python C++ Debug` to `Python C++ Debugger` for improved Marketplace search results
 * Small fixes

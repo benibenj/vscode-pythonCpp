@@ -136,11 +136,6 @@
         "category": "Python C++ Debugger",
         "enablement": "!inDebugMode",
         "icon": "$(play)"
-      },
-      {
-        "command": "extension.pythonCpp-debug.restart",
-        "title": "Python C++ Debugger Restart",
-        "category": "Python C++ Debugger"
       }
     ],
     "breakpoints": [
@@ -185,20 +180,20 @@
               },
               "pythonConfig": {
                 "enum": [
-                  "manual",
+                  "costum",
                   "default"
                 ],
-                "description": "Pick 'default' if you wish to use the default Python config, otherwise 'manual' and specify the 'pythonLaunchName' attribute",
-                "default": "manual"
+                "description": "Pick 'default' if you wish to use the default Python config, otherwise 'costum' and specify the 'pythonLaunchName' attribute",
+                "default": "costum"
               },
               "cppConfig": {
                 "enum": [
-                  "manual",
+                  "costum",
                   "default (win) Attach",
                   "default (gdb) Attach"
                 ],
-                "description": "Pick 'default (win)/(gdb)' if you wish to use the default configuration, otherwise 'manual' and specify the 'cppAttachName' attribute",
-                "default": "manual"
+                "description": "Pick 'default (win)/(gdb)' if you wish to use the default configuration, otherwise 'costum' and specify the 'cppAttachName' attribute",
+                "default": "costum"
               },
               "entirePythonConfig": {
                 "type": "object",
@@ -231,25 +226,25 @@
         },
         "configurationSnippets": [
           {
-            "label": "Python C++ Debugger (Windows)",
+            "label": "Python C++ Debugger Default",
             "description": "A new configuration for a Python C++ debugger",
             "body": {
               "name": "Python C++ Debugger",
               "type": "pythoncpp",
               "request": "launch",
-              "pythonLaunchName": "Python: Current File",
-              "cppAttachName": "(Windows) Attach"
+              "pythonConfig": "default",
+              "cppConfig": "!!pick 'default (win) Attach' or 'default (gdb) Attach'"
             }
           },
           {
-            "label": "Python C++ Debugger (gdb)",
+            "label": "Python C++ Debugger Costum",
             "description": "A new configuration for a Python C++ debugger",
             "body": {
               "name": "Python C++ Debugger",
               "type": "pythoncpp",
               "request": "launch",
               "pythonLaunchName": "Python: Current File",
-              "cppAttachName": "(gdb) Attach"
+              "cppAttachName": "'(Windows) Attach' or '(gdb) Attach'"
             }
           }
         ]

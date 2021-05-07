@@ -82,8 +82,9 @@ export class PythonCppDebugSession extends LoggingDebugSession {
 				if(!res.process.pid){
 					let message = "The python debugger couldn't send its processId,						\
 					 				make sure to enter an Issue on the official Python Cp++ Debug Github about this issue!" ;
-					vscode.window.showErrorMessage(message);
-					return;
+					return vscode.window.showErrorMessage(message).then(_ => {
+						return;
+					});
 				}
 
 				// set processid to debugpy processid to attach to
@@ -124,7 +125,7 @@ export class PythonCppDebugSession extends LoggingDebugSession {
 		if(config.entirePythonConfig){
 			pythonLaunch = config.entirePythonConfig
 		}
-		else if(!config.pythonConfig || config.pythonConfig === "manual"){
+		else if(!config.pythonConfig || config.pythonConfig === "costum"){
 			// Make sure the user has defined the properties 'pythonLaunchName' & 'cppAttachName
 			if(!config.pythonLaunchName){
 				let msg = "Please make sure to define 'pythonLaunchName' for pythonCpp in your launch.json file or set 'pythonConfig' to default";
@@ -156,7 +157,7 @@ export class PythonCppDebugSession extends LoggingDebugSession {
 		if(config.entireCppConfig){
 			cppAttach = config.entireCppConfig
 		}
-		else if(!config.cppConfig || config.cppConfig === "manual"){
+		else if(!config.cppConfig || config.cppConfig === "costum"){
 			// Make sure the user has defined the property 'cppAttachName'
 			if(!config.cppAttachName){
 				let msg = "Make sure to either define 'cppAttachName' for pythonCpp in your launch.json file or use the default configurations with the attribute 'cppConfig'";
@@ -171,6 +172,12 @@ export class PythonCppDebugSession extends LoggingDebugSession {
 					vscode.window.showErrorMessage(message);
 					return undefined;
 				}
+
+				// If the program field isn't specified, fill it in automatically
+				if(!cppAttach["program"] && cppAttach["name"].contains("gdb")){
+					cppAttach["program"] = await getPythonPath(null);
+				}
+
 				cppAttach["processId"] = "";
 			}
 		}
