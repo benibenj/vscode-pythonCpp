@@ -181,7 +181,8 @@
               "pythonConfig": {
                 "enum": [
                   "costum",
-                  "default"
+                  "default",
+                  "manual"
                 ],
                 "description": "Pick 'default' if you wish to use the default Python config, otherwise 'costum' and specify the 'pythonLaunchName' attribute",
                 "default": "costum"
@@ -189,6 +190,7 @@
               "cppConfig": {
                 "enum": [
                   "costum",
+                  "manual",
                   "default (win) Attach",
                   "default (gdb) Attach"
                 ],

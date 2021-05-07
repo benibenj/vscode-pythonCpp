@@ -1,3 +1,6 @@
+## 0.2.11
+* Minor change
+
 ## 0.2.10
 * Added a new Quickpick option for default configurations
 * Added a default configuration to the `Add Configuration` results in the launch.json file

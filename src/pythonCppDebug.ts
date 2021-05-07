@@ -125,7 +125,7 @@ export class PythonCppDebugSession extends LoggingDebugSession {
 		if(config.entirePythonConfig){
 			pythonLaunch = config.entirePythonConfig
 		}
-		else if(!config.pythonConfig || config.pythonConfig === "costum"){
+		else if(!config.pythonConfig || config.pythonConfig === "costum" || config.pythonConfig === "manual"){
 			// Make sure the user has defined the properties 'pythonLaunchName' & 'cppAttachName
 			if(!config.pythonLaunchName){
 				let msg = "Please make sure to define 'pythonLaunchName' for pythonCpp in your launch.json file or set 'pythonConfig' to default";
@@ -157,7 +157,7 @@ export class PythonCppDebugSession extends LoggingDebugSession {
 		if(config.entireCppConfig){
 			cppAttach = config.entireCppConfig
 		}
-		else if(!config.cppConfig || config.cppConfig === "costum"){
+		else if(!config.cppConfig || config.cppConfig === "costum", config.cppConfig === "manual"){
 			// Make sure the user has defined the property 'cppAttachName'
 			if(!config.cppAttachName){
 				let msg = "Make sure to either define 'cppAttachName' for pythonCpp in your launch.json file or use the default configurations with the attribute 'cppConfig'";

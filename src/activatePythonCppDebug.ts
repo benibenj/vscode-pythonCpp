@@ -90,7 +90,7 @@ class PythonCppConfigurationProvider implements vscode.DebugConfigurationProvide
 
 		if (
 			!config.entirePythonConfig &&
-			((config.pythonConfig && config.pythonConfig == 'costum') || !config.pythonConfig) &&
+			((config.pythonConfig && (config.pythonConfig == 'costum' || config.pythonConfig == 'manual')) || !config.pythonConfig) &&
 			!config.pythonLaunchName
 		) {
 			let msg = 
@@ -103,7 +103,7 @@ class PythonCppConfigurationProvider implements vscode.DebugConfigurationProvide
 
 		if (
 			!config.entireCppConfig &&
-			((config.cppConfig && config.cppConfig == 'costum') || !config.cppConfig) &&
+			((config.cppConfig && (config.cppConfig == 'costum' || config.cppConfig == 'manual')) || !config.cppConfig) &&
 			!config.cppAttachName
 		) {
 			let msg = 
