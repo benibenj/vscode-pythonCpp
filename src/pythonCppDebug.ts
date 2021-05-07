@@ -157,7 +157,7 @@ export class PythonCppDebugSession extends LoggingDebugSession {
 		if(config.entireCppConfig){
 			cppAttach = config.entireCppConfig
 		}
-		else if(!config.cppConfig || config.cppConfig === "costum", config.cppConfig === "manual"){
+		else if(!config.cppConfig || config.cppConfig === "costum" || config.cppConfig === "manual"){
 			// Make sure the user has defined the property 'cppAttachName'
 			if(!config.cppAttachName){
 				let msg = "Make sure to either define 'cppAttachName' for pythonCpp in your launch.json file or use the default configurations with the attribute 'cppConfig'";
