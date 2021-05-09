@@ -174,7 +174,7 @@ export class PythonCppDebugSession extends LoggingDebugSession {
 				}
 
 				// If the program field isn't specified, fill it in automatically
-				if(!cppAttach["program"] && cppAttach["name"].contains("gdb")){
+				if(!cppAttach["program"] && cppAttach["type"] == "cppdbg"){
 					cppAttach["program"] = await getPythonPath(null);
 				}
 
@@ -207,11 +207,6 @@ export class PythonCppDebugSession extends LoggingDebugSession {
 			}
 		}
 
-		/* 
-			We have to stringify both python and cpp configs as they might use commands (for example command:pickprocess) 
-			that this extension hasn't defined and would cause an error. We need to make sure to JSON.parse(...) them 
-			before handing them to the debuggers.
-		*/
 		config.pythonLaunch = pythonLaunch;
 		config.cppAttach = cppAttach;
 
