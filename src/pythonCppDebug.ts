@@ -49,8 +49,13 @@ export class PythonCppDebugSession extends LoggingDebugSession {
 		this.folder = folders[0];
 	}
 
-	protected async launchRequest(response: DebugProtocol.LaunchResponse, args: ILaunchRequestArguments) {
-
+	protected async launchRequest(
+		response: DebugProtocol.LaunchResponse, 
+		args: ILaunchRequestArguments
+	) {
+		// We terminate the session so that the active debugsession 
+		// will be python when we will need it
+		this.sendEvent(new TerminatedEvent());
 		if(!this.folder){
 			let message = "Working folder not found, open a folder and try again" ;
 			vscode.window.showErrorMessage(message);
@@ -59,7 +64,6 @@ export class PythonCppDebugSession extends LoggingDebugSession {
 
 		let config = await this.checkConfig(args, this.folder);
 		if(!config){
-			this.sendEvent(new TerminatedEvent());
 			return;
 		}
 		args = config;
@@ -76,8 +80,8 @@ export class PythonCppDebugSession extends LoggingDebugSession {
 			if(!vscode.debug.activeDebugSession || !pythonStartResponse){
 				return;
 			}
-
-			vscode.debug.activeDebugSession.customRequest('pydevdSystemInfo').then(res => {
+			const pySession = vscode.debug.activeDebugSession;
+			pySession.customRequest('pydevdSystemInfo').then(res => {
 
 				if(!res.process.pid){
 					let message = "The python debugger couldn't send its processId,						\
@@ -93,9 +97,8 @@ export class PythonCppDebugSession extends LoggingDebugSession {
 				vscode.debug.startDebugging(this.folder, cppConf, undefined).then(cppStartResponse => {
 
 					// If the Cpp debugger wont start make sure to stop the python debugsession
-					let pythonSession = vscode.debug.activeDebugSession;
-					if(!cppStartResponse && pythonSession && pythonSession.type === 'python'){
-						vscode.debug.stopDebugging(pythonSession);
+					if(!cppStartResponse){
+						vscode.debug.stopDebugging(pySession);
 						return;
 					}
 					
@@ -105,8 +108,8 @@ export class PythonCppDebugSession extends LoggingDebugSession {
 						 * If the user hasn't defined/set stopOnEntry in the Python config 
 						 * we continue as we force a stopOnEntry to attach the Cpp debugger
 						 * */ 
-						if(vscode.debug.activeDebugSession && !oldStopOnEntry){
-							vscode.debug.activeDebugSession.customRequest('continue');
+						if(!oldStopOnEntry){
+							pySession.customRequest('continue');
 						}
 					},
 					(!args.optimizedLaunch) ? 500 : 0);
@@ -114,7 +117,6 @@ export class PythonCppDebugSession extends LoggingDebugSession {
 			});
 		});
 		
-		this.sendEvent(new TerminatedEvent());
 		this.sendResponse(response);
 	}
 
