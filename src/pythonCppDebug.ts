@@ -122,12 +122,12 @@ export class PythonCppDebugSession extends LoggingDebugSession {
 
 	protected async checkConfig(config:ILaunchRequestArguments, folder:vscode.WorkspaceFolder): Promise<ILaunchRequestArguments | undefined>{
 		
-		// Python Launch configuration can be set manually or automtically with the default settings
+		// Python Launch configuration can be set manually or automatically with the default settings
 		let pythonLaunch;
 		if(config.entirePythonConfig){
 			pythonLaunch = config.entirePythonConfig
 		}
-		else if(!config.pythonConfig || config.pythonConfig === "costum" || config.pythonConfig === "manual"){
+		else if(!config.pythonConfig || config.pythonConfig === "custom" || config.pythonConfig === "manual"){
 			// Make sure the user has defined the properties 'pythonLaunchName' & 'cppAttachName
 			if(!config.pythonLaunchName){
 				let msg = "Please make sure to define 'pythonLaunchName' for pythonCpp in your launch.json file or set 'pythonConfig' to default";
@@ -154,12 +154,12 @@ export class PythonCppDebugSession extends LoggingDebugSession {
 			};
 		}
 
-		// C++ launch configuration can be set manually or automtically with the default settings
+		// C++ launch configuration can be set manually or automatically with the default settings
 		let cppAttach;
 		if(config.entireCppConfig){
 			cppAttach = config.entireCppConfig
 		}
-		else if(!config.cppConfig || config.cppConfig === "costum" || config.cppConfig === "manual"){
+		else if(!config.cppConfig || config.cppConfig === "custom" || config.cppConfig === "manual"){
 			// Make sure the user has defined the property 'cppAttachName'
 			if(!config.cppAttachName){
 				let msg = "Make sure to either define 'cppAttachName' for pythonCpp in your launch.json file or use the default configurations with the attribute 'cppConfig'";

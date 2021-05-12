@@ -90,7 +90,7 @@ class PythonCppConfigurationProvider implements vscode.DebugConfigurationProvide
 
 		if (
 			!config.entirePythonConfig &&
-			((config.pythonConfig && (config.pythonConfig == 'costum' || config.pythonConfig == 'manual')) || !config.pythonConfig) &&
+			((config.pythonConfig && (config.pythonConfig == 'custom' || config.pythonConfig == 'manual')) || !config.pythonConfig) &&
 			!config.pythonLaunchName
 		) {
 			let msg = 
@@ -103,12 +103,12 @@ class PythonCppConfigurationProvider implements vscode.DebugConfigurationProvide
 
 		if (
 			!config.entireCppConfig &&
-			((config.cppConfig && (config.cppConfig == 'costum' || config.cppConfig == 'manual')) || !config.cppConfig) &&
+			((config.cppConfig && (config.cppConfig == 'custom' || config.cppConfig == 'manual')) || !config.cppConfig) &&
 			!config.cppAttachName
 		) {
 			let msg = 
 			"Make sure to either set 'cppAttachName' to the name of " +
-			"your C++ configuration or set 'cppConfig' to the default confiuration you wish to use";
+			"your C++ configuration or set 'cppConfig' to the default configuration you wish to use";
 			return vscode.window.showErrorMessage(msg).then(_ => {
 				return undefined;	// abort launch
 			});
@@ -154,8 +154,8 @@ class PythonCppConfigurationProvider implements vscode.DebugConfigurationProvide
 
 		const items: MenuItem[] = [
 			{ label: "Python C++ Debugger", configuration: winConfig, description: "Default", type: "Default" },
-			{ label: "Python C++ Debugger", configuration: winConfig, description: "Costum: Windows", type: "(Windows)" },
-			{ label: "Python C++ Debugger", configuration: gdbConfig, description: "Costum: GDB", type: "(gdb)" }
+			{ label: "Python C++ Debugger", configuration: winConfig, description: "Custom: Windows", type: "(Windows)" },
+			{ label: "Python C++ Debugger", configuration: gdbConfig, description: "Custom: GDB", type: "(gdb)" }
 		];
 
 		const selection: MenuItem | undefined = await vscode.window.showQuickPick(items, { placeHolder: "Select a configuration" });

@@ -180,22 +180,22 @@
               },
               "pythonConfig": {
                 "enum": [
-                  "costum",
+                  "custom",
                   "default",
                   "manual"
                 ],
-                "description": "Pick 'default' if you wish to use the default Python config, otherwise 'costum' and specify the 'pythonLaunchName' attribute",
-                "default": "costum"
+                "description": "Pick 'default' if you wish to use the default Python config, otherwise 'custom' and specify the 'pythonLaunchName' attribute",
+                "default": "custom"
               },
               "cppConfig": {
                 "enum": [
-                  "costum",
+                  "custom",
                   "manual",
                   "default (win) Attach",
                   "default (gdb) Attach"
                 ],
-                "description": "Pick 'default (win)/(gdb)' if you wish to use the default configuration, otherwise 'costum' and specify the 'cppAttachName' attribute",
-                "default": "costum"
+                "description": "Pick 'default (win)/(gdb)' if you wish to use the default configuration, otherwise 'custom' and specify the 'cppAttachName' attribute",
+                "default": "custom"
               },
               "entirePythonConfig": {
                 "type": "object",
@@ -239,7 +239,7 @@
             }
           },
           {
-            "label": "Python C++ Debugger Costum",
+            "label": "Python C++ Debugger Custom",
             "description": "A new configuration for a Python C++ debugger",
             "body": {
               "name": "Python C++ Debugger",

@@ -37,7 +37,7 @@ If you plan to use the default configuration of the python and/or C++ debugger, 
 
 ```
 
-## Custom Configuartions:
+## Custom Configurations:
 
 To manually define the configurations you can set the attributes `pythonLaunchName` & `cppAttachName` to the name of the configuration you wish to use from your launch.json file.
 
