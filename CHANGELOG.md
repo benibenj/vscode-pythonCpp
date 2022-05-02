@@ -1,3 +1,6 @@
+## 0.2.16
+* Passes Python process ID to `pid` of C++ config for other C++ debuggers
+
 ## 0.2.11 - 0.2.15
 * Minor changes and bug fixes
 

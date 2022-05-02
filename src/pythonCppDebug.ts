@@ -127,7 +127,7 @@ export class PythonCppDebugSession extends LoggingDebugSession {
 		// Python Launch configuration can be set manually or automatically with the default settings
 		let pythonLaunch;
 		if(config.entirePythonConfig){
-			pythonLaunch = config.entirePythonConfig
+			pythonLaunch = config.entirePythonConfig;
 		}
 		else if(!config.pythonConfig || config.pythonConfig === "custom" || config.pythonConfig === "manual"){
 			// Make sure the user has defined the properties 'pythonLaunchName' & 'cppAttachName
@@ -159,7 +159,7 @@ export class PythonCppDebugSession extends LoggingDebugSession {
 		// C++ launch configuration can be set manually or automatically with the default settings
 		let cppAttach;
 		if(config.entireCppConfig){
-			cppAttach = config.entireCppConfig
+			cppAttach = config.entireCppConfig;
 		}
 		else if(!config.cppConfig || config.cppConfig === "custom" || config.cppConfig === "manual"){
 			// Make sure the user has defined the property 'cppAttachName'
@@ -178,7 +178,7 @@ export class PythonCppDebugSession extends LoggingDebugSession {
 				}
 
 				// If the program field isn't specified, fill it in automatically
-				if(!cppAttach["program"] && cppAttach["type"] == "cppdbg"){
+				if(!cppAttach["program"] && cppAttach["type"] === "cppdbg"){
 					cppAttach["program"] = await getPythonPath(null);
 				}
 
@@ -208,7 +208,7 @@ export class PythonCppDebugSession extends LoggingDebugSession {
 						"ignoreFailures": true
 					}
 				]
-			}
+			};
 		}
 
 		config.pythonLaunch = pythonLaunch;
