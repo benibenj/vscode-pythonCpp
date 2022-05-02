@@ -90,7 +90,7 @@ class PythonCppConfigurationProvider implements vscode.DebugConfigurationProvide
 
 		if (
 			!config.entirePythonConfig &&
-			((config.pythonConfig && (config.pythonConfig == 'custom' || config.pythonConfig == 'manual')) || !config.pythonConfig) &&
+			((config.pythonConfig && (config.pythonConfig === 'custom' || config.pythonConfig === 'manual')) || !config.pythonConfig) &&
 			!config.pythonLaunchName
 		) {
 			let msg = 
@@ -103,7 +103,7 @@ class PythonCppConfigurationProvider implements vscode.DebugConfigurationProvide
 
 		if (
 			!config.entireCppConfig &&
-			((config.cppConfig && (config.cppConfig == 'custom' || config.cppConfig == 'manual')) || !config.cppConfig) &&
+			((config.cppConfig && (config.cppConfig === 'custom' || config.cppConfig === 'manual')) || !config.cppConfig) &&
 			!config.cppAttachName
 		) {
 			let msg = 
@@ -166,7 +166,7 @@ class PythonCppConfigurationProvider implements vscode.DebugConfigurationProvide
 				"request": "launch",
 				"pythonConfig": "default",
 				"cppConfig": os.platform().startsWith("win") ? "default (win) Attach" : "default (gdb) Attach"
-			  }
+			  };
 			return [defaultConfig];
 		}
 
