@@ -93,6 +93,8 @@ export class PythonCppDebugSession extends LoggingDebugSession {
 
 				// set processid to debugpy processid to attach to
 				cppConf.processId = res.process.pid;
+				// for vadimcn.vscode-lldb
+				cppConf.pid = res.process.pid;
 
 				vscode.debug.startDebugging(this.folder, cppConf, undefined).then(cppStartResponse => {
 
