@@ -41,7 +41,7 @@ export class PythonCppDebugSession extends LoggingDebugSession {
 
 		let folders = vscode.workspace.workspaceFolders;
 		if(!folders){
-			let message = "Working folder not found, open a folder and try again" ;
+			let message = "Working folder not found, open a folder and try again!" ;
 			vscode.window.showErrorMessage(message);
 			this.sendEvent(new TerminatedEvent());
 			return;
@@ -57,7 +57,7 @@ export class PythonCppDebugSession extends LoggingDebugSession {
 		// will be python when we will need it
 		this.sendEvent(new TerminatedEvent());
 		if(!this.folder){
-			let message = "Working folder not found, open a folder and try again" ;
+			let message = "Working folder not found, open a folder and try again!" ;
 			vscode.window.showErrorMessage(message);
 			return;
 		}

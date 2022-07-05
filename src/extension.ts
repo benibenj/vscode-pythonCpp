@@ -17,11 +17,11 @@ export async function activate(context: vscode.ExtensionContext) {
 	extPy = vscode.extensions.getExtension("ms-python.python");
 	extCpp = vscode.extensions.getExtension("ms-vscode.cpptools");
 	if(!extPy){
-		vscode.window.showErrorMessage("You must have the official Python extension to use this debugger");
+		vscode.window.showErrorMessage("You must have the official Python extension to use this debugger!!");
 		return;
 	}
 	if(!extCpp){
-		vscode.window.showErrorMessage("You must have the official C++ extension to use this debugger");
+		vscode.window.showErrorMessage("You must have the official C++ extension to use this debugger!!");
 		return;
 	}
 	if(!extPy.isActive){
