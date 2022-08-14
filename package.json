@@ -8,6 +8,9 @@
     "name": "Benjamin Simmonds",
     "email": "Benjaminsimmonds@outlook.com"
   },
+  "sponsor": {
+    "url": "https://github.com/sponsors/benibenj"
+  },
   "license": "MIT",
   "keywords": [
     "python",
