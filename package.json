@@ -236,7 +236,7 @@
               "type": "pythoncpp",
               "request": "launch",
               "pythonConfig": "default",
-              "cppConfig": "!!pick 'default (win) Attach' or 'default (gdb) Attach' or 'default (lldb) Attach'"
+              "cppConfig": "!!!pick 'default (win) Attach' or 'default (gdb) Attach' or 'default (lldb) Attach'"
             }
           },
           {

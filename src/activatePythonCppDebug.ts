@@ -173,7 +173,7 @@ class PythonCppConfigurationProvider implements vscode.DebugConfigurationProvide
 		const items: MenuItem[] = [
 			{ label: "Python C++ Debugger", configuration: winConfig, description: "Default", type: "Default" },
 			{ label: "Python C++ Debugger", configuration: winConfig, description: "Custom: Windows", type: "(Windows)" },
-			{ label: "Python C++ Debugger", configuration: gdbConfig, description: "Custom: GDB", type: "(gdb)" }
+			{ label: "Python C++ Debugger", configuration: gdbConfig, description: "Custom: GDB", type: "(gdb)" },
 			{ label: "Python C++ Debugger", configuration: lldbConfig, description: "Custom: LLDB", type: "(lldb)" }
 		];
 
