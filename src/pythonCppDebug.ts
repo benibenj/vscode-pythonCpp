@@ -34,14 +34,14 @@ interface ILaunchRequestArguments extends DebugProtocol.LaunchRequestArguments {
 
 export class PythonCppDebugSession extends LoggingDebugSession {
 
-	private folder : vscode.WorkspaceFolder | undefined;
+	private folder: vscode.WorkspaceFolder | undefined;
 
 	public constructor() {
 		super();
 
 		let folders = vscode.workspace.workspaceFolders;
-		if(!folders){
-			let message = "Working folder not found, open a folder and try again" ;
+		if (!folders) {
+			let message = "Working folder not found, open a folder and try again";
 			vscode.window.showErrorMessage(message);
 			this.sendEvent(new TerminatedEvent());
 			return;
@@ -50,40 +50,40 @@ export class PythonCppDebugSession extends LoggingDebugSession {
 	}
 
 	protected async launchRequest(
-		response: DebugProtocol.LaunchResponse, 
+		response: DebugProtocol.LaunchResponse,
 		args: ILaunchRequestArguments
 	) {
 		// We terminate the session so that the active debugsession 
 		// will be python when we will need it
 		this.sendEvent(new TerminatedEvent());
-		if(!this.folder){
-			let message = "Working folder not found, open a folder and try again" ;
+		if (!this.folder) {
+			let message = "Working folder not found, open a folder and try again";
 			vscode.window.showErrorMessage(message);
 			return;
 		}
 
 		let config = await this.checkConfig(args, this.folder);
-		if(!config){
+		if (!config) {
 			return;
 		}
 		args = config;
 
 		let pyConf = args.pythonLaunch;
 		let cppConf = args.cppAttach;
-		
+
 		// We force the Debugger to stopOnEntry so we can attach the cpp debugger
-		let oldStopOnEntry : boolean = pyConf.stopOnEntry ? true : false;
+		let oldStopOnEntry: boolean = pyConf.stopOnEntry ? true : false;
 		pyConf.stopOnEntry = true;
 
-		await vscode.debug.startDebugging(this.folder, pyConf, undefined).then( pythonStartResponse => {
+		await vscode.debug.startDebugging(this.folder, pyConf, undefined).then(pythonStartResponse => {
 
-			if(!vscode.debug.activeDebugSession || !pythonStartResponse){
+			if (!vscode.debug.activeDebugSession || !pythonStartResponse) {
 				return;
 			}
 			const pySession = vscode.debug.activeDebugSession;
 			pySession.customRequest('pydevdSystemInfo').then(res => {
 
-				if(!res.process.pid){
+				if (!res.process.pid) {
 					let message = "The python debugger couldn't send its processId,						\
 					 				make sure to enter an Issue on the official Python Cp++ Debug Github about this issue!" ;
 					return vscode.window.showErrorMessage(message).then(_ => {
@@ -98,54 +98,54 @@ export class PythonCppDebugSession extends LoggingDebugSession {
 				vscode.debug.startDebugging(this.folder, cppConf, undefined).then(cppStartResponse => {
 
 					// If the Cpp debugger wont start make sure to stop the python debugsession
-					if(!cppStartResponse){
+					if (!cppStartResponse) {
 						vscode.debug.stopDebugging(pySession);
 						return;
 					}
-					
+
 					// We have to delay the call to continue the process as it might not have fully attached yet
 					setTimeout(_ => {
 						/** 
 						 * If the user hasn't defined/set stopOnEntry in the Python config 
 						 * we continue as we force a stopOnEntry to attach the Cpp debugger
-						 * */ 
-						if(!oldStopOnEntry){
+						 * */
+						if (!oldStopOnEntry) {
 							pySession.customRequest('continue');
 						}
 					},
-					(!args.optimizedLaunch) ? 500 : 0);
+						(!args.optimizedLaunch) ? 500 : 0);
 				});
 			});
 		});
-		
+
 		this.sendResponse(response);
 	}
 
-	protected async checkConfig(config:ILaunchRequestArguments, folder:vscode.WorkspaceFolder): Promise<ILaunchRequestArguments | undefined>{
-		
+	protected async checkConfig(config: ILaunchRequestArguments, folder: vscode.WorkspaceFolder): Promise<ILaunchRequestArguments | undefined> {
+
 		// Python Launch configuration can be set manually or automatically with the default settings
 		let pythonLaunch;
-		if(config.entirePythonConfig){
+		if (config.entirePythonConfig) {
 			pythonLaunch = config.entirePythonConfig;
 		}
-		else if(!config.pythonConfig || config.pythonConfig === "custom" || config.pythonConfig === "manual"){
+		else if (!config.pythonConfig || config.pythonConfig === "custom" || config.pythonConfig === "manual") {
 			// Make sure the user has defined the properties 'pythonLaunchName' & 'cppAttachName
-			if(!config.pythonLaunchName){
+			if (!config.pythonLaunchName) {
 				let msg = "Please make sure to define 'pythonLaunchName' for pythonCpp in your launch.json file or set 'pythonConfig' to default";
 				return vscode.window.showErrorMessage(msg).then(_ => {
 					return undefined;	// abort launch
 				});
-			} 
-			else{
+			}
+			else {
 				pythonLaunch = getConfig(config.pythonLaunchName, folder);
-				if(!pythonLaunch){
+				if (!pythonLaunch) {
 					let message = "Please make sure you have a configurations with the names '" + config.pythonLaunchName + "' in your launch.json file.";
 					vscode.window.showErrorMessage(message);
 					return undefined;
 				}
 			}
 		}
-		else if(config.pythonConfig === "default"){
+		else if (config.pythonConfig === "default") {
 			pythonLaunch = {
 				"name": "Python: Current File",
 				"type": "python",
@@ -157,34 +157,34 @@ export class PythonCppDebugSession extends LoggingDebugSession {
 
 		// C++ launch configuration can be set manually or automatically with the default settings
 		let cppAttach;
-		if(config.entireCppConfig){
+		if (config.entireCppConfig) {
 			cppAttach = config.entireCppConfig;
 		}
-		else if(!config.cppConfig || config.cppConfig === "custom" || config.cppConfig === "manual"){
+		else if (!config.cppConfig || config.cppConfig === "custom" || config.cppConfig === "manual") {
 			// Make sure the user has defined the property 'cppAttachName'
-			if(!config.cppAttachName){
+			if (!config.cppAttachName) {
 				let msg = "Make sure to either define 'cppAttachName' for pythonCpp in your launch.json file or use the default configurations with the attribute 'cppConfig'";
 				return vscode.window.showErrorMessage(msg).then(_ => {
 					return undefined;	// abort launch
 				});
-			} 
-			else{
+			}
+			else {
 				cppAttach = getConfig(config.cppAttachName, folder);
-				if(!cppAttach){
+				if (!cppAttach) {
 					let message = "Make sure you have a configurations with the names '" + config.cppAttachName + "' in your launch.json file.";
 					vscode.window.showErrorMessage(message);
 					return undefined;
 				}
 
 				// If the program field isn't specified, fill it in automatically
-				if(!cppAttach["program"] && cppAttach["type"] === "cppdbg"){
+				if (!cppAttach["program"] && cppAttach["type"] === "cppdbg") {
 					cppAttach["program"] = await getPythonPath(null);
 				}
 
 				cppAttach["processId"] = "";
 			}
 		}
-		else if(config.cppConfig === "default (win) Attach"){
+		else if (config.cppConfig === "default (win) Attach") {
 			cppAttach = {
 				"name": "(Windows) Attach",
 				"type": "cppvsdbg",
@@ -192,7 +192,7 @@ export class PythonCppDebugSession extends LoggingDebugSession {
 				"processId": ""
 			};
 		}
-		else if(config.cppConfig === "default (gdb) Attach"){
+		else if (config.cppConfig === "default (gdb) Attach") {
 			cppAttach = {
 				"name": "(gdb) Attach",
 				"type": "cppdbg",
@@ -209,6 +209,23 @@ export class PythonCppDebugSession extends LoggingDebugSession {
 				]
 			};
 		}
+		else if (config.cppConfig === "default (lldb) Attach") {
+			cppAttach = {
+				"name": "(lldb) Attach",
+				"type": "cppdbg",
+				"request": "attach",
+				"program": await getPythonPath(null),
+				"processId": "",
+				"MIMode": "lldb",
+				"setupCommands": [
+					{
+						"description": "Enable pretty-printing for lldb",
+						"text": "-enable-pretty-printing",
+						"ignoreFailures": true
+					}
+				]
+			};
+		}
 
 		config.pythonLaunch = pythonLaunch;
 		config.cppAttach = cppAttach;
@@ -217,11 +234,11 @@ export class PythonCppDebugSession extends LoggingDebugSession {
 	}
 }
 
-function getConfig(name:string, folder:vscode.WorkspaceFolder): JSON | undefined{
+function getConfig(name: string, folder: vscode.WorkspaceFolder): JSON | undefined {
 	const launchConfigs = vscode.workspace.getConfiguration('launch', folder.uri);
 	const values: JSON | undefined = launchConfigs.get('configurations');
-	if(!values){
-		let message = "Unexpected error with the launch.json file" ;
+	if (!values) {
+		let message = "Unexpected error with the launch.json file";
 		vscode.window.showErrorMessage(message);
 		return undefined;
 	}
@@ -229,10 +246,10 @@ function getConfig(name:string, folder:vscode.WorkspaceFolder): JSON | undefined
 	return nameDefinedInLaunch(name, values);
 }
 
-function nameDefinedInLaunch(name:string, launch:JSON): JSON | undefined {
+function nameDefinedInLaunch(name: string, launch: JSON): JSON | undefined {
 	let i = 0;
-	while(launch[i]){
-		if(launch[i].name === name){
+	while (launch[i]) {
+		if (launch[i].name === name) {
 			return launch[i];
 		}
 		i++;
