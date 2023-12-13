@@ -20,6 +20,7 @@ If you plan to use the default configuration of the python and/or C++ debugger, 
 * **C++:** 
   - `cppConfig: default (win) Attach` will attach the C++ debugger with the `(Windows) Attach` config.
   - `cppConfig: default (gdb) Attach` will attach the C++ debugger with the `(gdb) Attach` config. This will also set the program path automatically to the path of the current python interpreter and lookup the gdb path.
+  - `cppConfig: default (lldb) Attach` will attach the C++ debugger with the `(lldb) Attach` config. This will also set the program path automatically to the path of the current python interpreter and lookup the lldb path.
 
 ```json
 {
@@ -41,7 +42,7 @@ If you plan to use the default configuration of the python and/or C++ debugger, 
 
 To manually define the configurations you can set the attributes `pythonLaunchName` & `cppAttachName` to the name of the configuration you wish to use from your launch.json file.
 
- The following is an example launch.json file for windows users. If your working on Linux make sure to have a `(gdb) Attach` configuration instead of `(Windows) Attach`.
+ The following is an example launch.json file for windows users. If your working on Linux make sure to have a `(gdb) Attach` configuration, or on macOS use `(lldb) Attach`, instead of `(Windows) Attach`.
 
 ```json
 {
