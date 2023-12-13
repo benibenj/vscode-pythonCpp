@@ -209,6 +209,23 @@ export class PythonCppDebugSession extends LoggingDebugSession {
 				]
 			};
 		}
+		else if(config.cppConfig === "default (lldb) Attach"){
+			cppAttach = {
+				"name": "(lldb) Attach",
+				"type": "cppdbg",
+				"request": "attach",
+				"program": await getPythonPath(null),
+				"processId": "",
+				"MIMode": "lldb",
+				"setupCommands": [
+					{
+						"description": "Enable pretty-printing for gdb",
+						"text": "-enable-pretty-printing",
+						"ignoreFailures": true
+					}
+				]
+			};
+		}
 
 		config.pythonLaunch = pythonLaunch;
 		config.cppAttach = cppAttach;
